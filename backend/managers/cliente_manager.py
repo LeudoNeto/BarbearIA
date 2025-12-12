@@ -1,7 +1,6 @@
 from models.cliente import Cliente
 from services.senha_service import SenhaService
 from repositories.cliente_repository import cliente_repository
-from exceptions import ValidationException
 
 
 class ClienteManager:
@@ -30,21 +29,11 @@ class ClienteManager:
         :param dados: dict com email, senha, telefone e opcionalmente foto
         :return: dict com dados do cliente criado
         """
-        # Validações
         email = dados.get('email')
         senha = dados.get('senha')
         telefone = dados.get('telefone')
         foto = dados.get('foto')
-        
-        if not self.validacao_service.validar_email(email):
-            raise ValidationException('Email inválido')
-        
-        if not self.validacao_service.validar_senha(senha):
-            raise ValidationException('Senha inválida (mínimo 6 caracteres)')
-        
-        if not self.validacao_service.validar_telefone(telefone):
-            raise ValidationException('Telefone inválido')
-        
+                
         # Hash da senha
         senha_hash = self.senha_service.hash_senha(senha)
         
