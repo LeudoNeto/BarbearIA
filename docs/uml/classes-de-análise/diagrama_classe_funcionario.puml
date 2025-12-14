@@ -1,0 +1,56 @@
+@startuml
+title Diagrama de Classes - Fluxo de Funcionário
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "Models/Domains" {
+    class Usuario {
+        #id : int
+        #email : str
+        #senha : str
+        #foto : str
+    }
+
+    class Funcionario {
+        +to_dict()
+        +to_dict_with_password()
+    }
+
+    Usuario <|-- Funcionario
+}
+
+package "Repositories" {
+    class FuncionarioRepository {
+        -db
+        +criar()
+        +listar()
+    }
+}
+
+package "Services" {
+    class SenhaService{
+        +hash_senha()
+        +verificar_senha()
+    }
+}
+
+package "Managers" {
+    class FuncionarioManager {
+        +criar_funcionario()
+        +listar_funcionarios()
+    }
+}
+
+package "Controllers" {
+    class FuncionarioController {
+        +_registrar_rotas()
+    }
+}
+
+' Relacionamentos
+FuncionarioController ..> FuncionarioManager : chama
+FuncionarioManager ..> SenhaService: usa
+FuncionarioManager --> FuncionarioRepository : chama
+FuncionarioManager ..> Funcionario : instancia
+FuncionarioRepository ..> Funcionario : armazena
+@enduml

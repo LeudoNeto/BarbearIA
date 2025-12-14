@@ -14,7 +14,7 @@ Sistema de gerenciamento de barbearia. Projeto da disciplina "Métodos de Projet
 ## 📚 Documentação
 
 - **[Documentação da API](./backend/README.md)** - Endpoints, exemplos de uso e modelos de dados
-- **[Diagramas UML](./docs/README.md)** - Casos de uso e diagrama de classes
+- **[Diagramas UML](./docs/README.md)** - Casos de uso e diagramas de classes
 
 ## 🚀 Instalação e Execução
 
