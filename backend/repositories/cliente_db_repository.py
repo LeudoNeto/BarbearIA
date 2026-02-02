@@ -1,11 +1,11 @@
-from models.funcionario import Funcionario
+from models.cliente import Cliente
 from config.database import DBConnection
 from exceptions import DatabaseException
 import pymysql
 
 
-class FuncionarioRepository:
-    """Repositório para operações de persistência de Funcionario"""
+class ClienteDBRepository:
+    """Repositório para operações de persistência de Cliente em banco de dados"""
     
     def __init__(self):
         """
@@ -19,68 +19,66 @@ class FuncionarioRepository:
     
     def listar(self):
         """
-        Lista todos os funcionários
+        Lista todos os clientes
         
-        :return: Lista de objetos Funcionario
+        :return: Lista de objetos Cliente
         """
         connection = self._get_connection()
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    SELECT id, email, senha, foto, eh_barbeiro, eh_admin 
-                    FROM funcionarios
+                    SELECT id, email, senha, foto, telefone 
+                    FROM clientes
                 """
                 cursor.execute(sql)
                 results = cursor.fetchall()
                 
-                funcionarios = []
+                clientes = []
                 for row in results:
-                    funcionario = Funcionario(
+                    cliente = Cliente(
                         id=row['id'],
                         email=row['email'],
                         senha=row['senha'],
                         foto=row['foto'],
-                        eh_barbeiro=bool(row['eh_barbeiro']),
-                        eh_admin=bool(row['eh_admin'])
+                        telefone=row['telefone']
                     )
-                    funcionarios.append(funcionario)
+                    clientes.append(cliente)
                 
-                return funcionarios
+                return clientes
         except pymysql.Error as e:
-            raise DatabaseException(f"Erro ao listar funcionários: {str(e)}")
+            raise DatabaseException(f"Erro ao listar clientes: {str(e)}")
         finally:
             connection.close()
     
-    def criar(self, funcionario):
+    def criar(self, cliente):
         """
-        Cria um novo funcionário no banco de dados
+        Cria um novo cliente no banco de dados
         
-        :param funcionario: Objeto Funcionario
-        :return: ID do funcionário criado
+        :param cliente: Objeto Cliente
+        :return: ID do cliente criado
         """
         connection = self._get_connection()
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    INSERT INTO funcionarios (email, senha, foto, eh_barbeiro, eh_admin)
-                    VALUES (%s, %s, %s, %s, %s)
+                    INSERT INTO clientes (email, senha, foto, telefone)
+                    VALUES (%s, %s, %s, %s)
                 """
                 cursor.execute(sql, (
-                    funcionario.email,
-                    funcionario.senha,
-                    funcionario.foto,
-                    funcionario.eh_barbeiro,
-                    funcionario.eh_admin
+                    cliente.email,
+                    cliente.senha,
+                    cliente.foto,
+                    cliente.telefone
                 ))
                 connection.commit()
                 return cursor.lastrowid
         except pymysql.IntegrityError as e:
             raise DatabaseException(f"Erro de integridade: {str(e)}")
         except pymysql.Error as e:
-            raise DatabaseException(f"Erro ao criar funcionário: {str(e)}")
+            raise DatabaseException(f"Erro ao criar cliente: {str(e)}")
         finally:
             connection.close()
 
 
 # Instância singleton
-funcionario_repository = FuncionarioRepository()
+cliente_db_repository = ClienteDBRepository()

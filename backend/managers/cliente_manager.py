@@ -1,7 +1,7 @@
 from models.cliente import Cliente
 from services.senha_service import SenhaService
 from services.validacao_service import ValidacaoService
-from repositories.cliente_repository import cliente_repository
+from repositories.repository_factory import repository_factory
 
 
 class ClienteManager:
@@ -11,7 +11,7 @@ class ClienteManager:
         """
         Inicializa o manager
         """
-        self.cliente_repository = cliente_repository
+        self.cliente_repository = repository_factory.get_cliente_repository()
         self.senha_service = SenhaService()
         self.validacao_service = ValidacaoService()
     

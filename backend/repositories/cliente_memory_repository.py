@@ -1,0 +1,44 @@
+from models.cliente import Cliente
+
+
+class ClienteMemoryRepository:
+    """Repositório em memória para operações de persistência de Cliente"""
+    
+    def __init__(self):
+        """
+        Inicializa o repositório em memória
+        """
+        self._clientes = {}  # Dicionário id -> Cliente
+        self._next_id = 1
+    
+    def listar(self):
+        """
+        Lista todos os clientes
+        
+        :return: Lista de objetos Cliente
+        """
+        return list(self._clientes.values())
+    
+    def criar(self, cliente):
+        """
+        Cria um novo cliente em memória
+        
+        :param cliente: Objeto Cliente
+        :return: ID do cliente criado
+        """
+        # Verifica se email já existe
+        for existing_cliente in self._clientes.values():
+            if existing_cliente.email == cliente.email:
+                from exceptions import DatabaseException
+                raise DatabaseException("Erro de integridade: Email já cadastrado")
+        
+        # Atribui ID e armazena
+        cliente.id = self._next_id
+        self._clientes[self._next_id] = cliente
+        self._next_id += 1
+        
+        return cliente.id
+
+
+# Instância singleton
+cliente_memory_repository = ClienteMemoryRepository()
