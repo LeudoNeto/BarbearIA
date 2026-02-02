@@ -1,5 +1,6 @@
 from models.cliente import Cliente
 from services.senha_service import SenhaService
+from services.validacao_service import ValidacaoService
 from repositories.cliente_repository import cliente_repository
 
 
@@ -12,6 +13,7 @@ class ClienteManager:
         """
         self.cliente_repository = cliente_repository
         self.senha_service = SenhaService()
+        self.validacao_service = ValidacaoService()
     
     def listar_clientes(self):
         """
@@ -33,6 +35,10 @@ class ClienteManager:
         senha = dados.get('senha')
         telefone = dados.get('telefone')
         foto = dados.get('foto')
+        
+        # Valida email e senha
+        self.validacao_service.validar_email(email)
+        self.validacao_service.validar_senha(senha, email=email)
                 
         # Hash da senha
         senha_hash = self.senha_service.hash_senha(senha)

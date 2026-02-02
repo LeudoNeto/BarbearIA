@@ -1,7 +1,7 @@
 from models.funcionario import Funcionario
 from services.senha_service import SenhaService
+from services.validacao_service import ValidacaoService
 from repositories.funcionario_repository import funcionario_repository
-from exceptions import ValidationException
 
 
 class FuncionarioManager:
@@ -13,6 +13,7 @@ class FuncionarioManager:
         """
         self.funcionario_repository = funcionario_repository
         self.senha_service = SenhaService()
+        self.validacao_service = ValidacaoService()
     
     def listar_funcionarios(self):
         """
@@ -35,6 +36,10 @@ class FuncionarioManager:
         eh_barbeiro = dados.get('eh_barbeiro', False)
         eh_admin = dados.get('eh_admin', False)
         foto = dados.get('foto')
+        
+        # Valida email e senha
+        self.validacao_service.validar_email(email)
+        self.validacao_service.validar_senha(senha, email=email)
                 
         # Hash da senha
         senha_hash = self.senha_service.hash_senha(senha)
