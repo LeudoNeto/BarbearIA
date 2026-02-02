@@ -1,6 +1,6 @@
 from models.funcionario import Funcionario
 from config.database import DBConnection
-from exceptions import DatabaseException
+from exceptions import DatabaseException, DuplicateException
 import pymysql
 
 
@@ -75,6 +75,9 @@ class FuncionarioDBRepository:
                 connection.commit()
                 return cursor.lastrowid
         except pymysql.IntegrityError as e:
+            # Verificar se é erro de duplicação de email
+            if 'email' in str(e).lower() and 'duplicate' in str(e).lower():
+                raise DuplicateException("Este email já está cadastrado no sistema")
             raise DatabaseException(f"Erro de integridade: {str(e)}")
         except pymysql.Error as e:
             raise DatabaseException(f"Erro ao criar funcionário: {str(e)}")

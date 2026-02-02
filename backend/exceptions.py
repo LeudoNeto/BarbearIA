@@ -1,4 +1,17 @@
 from fastapi import HTTPException, status
+import logging
+
+# Configurar logging para erros do sistema
+logging.basicConfig(
+    level=logging.ERROR,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('error.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 
 class ValidationException(HTTPException):
@@ -13,18 +26,22 @@ class ValidationException(HTTPException):
 class DatabaseException(HTTPException):
     """Exceção para erros de banco de dados"""
     def __init__(self, message: str):
+        logger.error(f"DatabaseException: {message}", exc_info=True)
+        
         super().__init__(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro no banco de dados: {message}"
+            detail="Erro interno do servidor. Por favor, tente novamente mais tarde."
         )
 
 
 class DatabaseConnectionException(HTTPException):
     """Exceção para erros de conexão com o banco de dados"""
     def __init__(self, message: str = "Não foi possível conectar ao banco de dados"):
+        logger.error(f"DatabaseConnectionException: {message}", exc_info=True)
+        
         super().__init__(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Serviço indisponível: {message}"
+            detail="Serviço temporariamente indisponível. Por favor, tente novamente em alguns instantes."
         )
 
 

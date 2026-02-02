@@ -1,4 +1,4 @@
-from models.cliente import Cliente
+from exceptions import DuplicateException
 
 
 class ClienteMemoryRepository:
@@ -29,8 +29,7 @@ class ClienteMemoryRepository:
         # Verifica se email já existe
         for existing_cliente in self._clientes.values():
             if existing_cliente.email == cliente.email:
-                from exceptions import DatabaseException
-                raise DatabaseException("Erro de integridade: Email já cadastrado")
+                raise DuplicateException("Este email já está cadastrado no sistema")
         
         # Atribui ID e armazena
         cliente.id = self._next_id

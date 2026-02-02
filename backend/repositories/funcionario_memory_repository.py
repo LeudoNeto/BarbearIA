@@ -1,4 +1,4 @@
-from models.funcionario import Funcionario
+from exceptions import DuplicateException
 
 
 class FuncionarioMemoryRepository:
@@ -29,8 +29,7 @@ class FuncionarioMemoryRepository:
         # Verifica se email já existe
         for existing_funcionario in self._funcionarios.values():
             if existing_funcionario.email == funcionario.email:
-                from exceptions import DatabaseException
-                raise DatabaseException("Erro de integridade: Email já cadastrado")
+                raise DuplicateException("Este email já está cadastrado no sistema")
         
         # Atribui ID e armazena
         funcionario.id = self._next_id
