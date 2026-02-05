@@ -3,43 +3,76 @@ title Diagrama de Classes - Fluxo de Cliente
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
+package "Exceptions" {
+    class ValidationException <<exception>> {
+        +status_code : int
+        +detail : str
+    }
+    class DuplicateException <<exception>> {
+        +status_code : int
+        +detail : str
+    }
+    class DatabaseException <<exception>> {
+        +status_code : int
+        +detail : str
+    }
+}
+
 package "Models/Domains" {
     class Usuario {
         #id : int
         #email : str
         #senha : str
         #foto : str
+        +to_dict()
     }
 
     class Cliente {
+        +telefone : str
         +to_dict()
-        +to_dict_with_password()
     }
 
     Usuario <|-- Cliente
 }
 
+package "Config" {
+    class PersistenceConfig {
+        +persistence_type : str
+        +is_memory() : bool
+    }
+}
+
 package "Repositories" {
-    class ClienteRepository {
-        -db
-        +criar()
+    class RepositoryFactory << (S,#FF7700) Singleton >> {
+        +get_cliente_repository()
+    }
+
+    class ClienteDBRepository {
+        +criar(cliente: Cliente)
+        +listar()
+    }
+
+    class ClienteMemoryRepository {
+        +criar(cliente: Cliente)
         +listar()
     }
 }
 
 package "Services" {
-    class SenhaService{
-        +hash_senha()
-        +verificar_senha()
+    class SenhaService {
+        +hash_senha(senha)
     }
 
-
+    class ValidacaoService {
+        +validar_email(email)
+        +validar_senha(senha, ...)
+    }
 }
 
 package "Managers" {
     class ClienteManager {
         +listar_clientes()
-        +criar_cliente()
+        +criar_cliente(dados)
     }
 }
 
@@ -49,10 +82,24 @@ package "Controllers" {
     }
 }
 
-' Relacionamentos
-ClienteController ..> ClienteManager : chama
-ClienteManager ..> SenhaService: usa
-ClienteManager --> ClienteRepository : chama
-ClienteManager ..> Cliente : instancia
-ClienteRepository ..> Cliente : armazena
+' Relacionamentos de Instância
+ClienteController --> ClienteManager : usa
+ClienteManager --> Services: usa
+
+' Fluxo do Factory
+RepositoryFactory ..> PersistenceConfig : consulta
+ClienteManager ..> RepositoryFactory : solicita repositório
+RepositoryFactory ..> ClienteDBRepository : cria/retorna
+RepositoryFactory ..> ClienteMemoryRepository : cria/retorna
+
+
+' Persistência
+ClienteDBRepository ..> Cliente : persiste
+ClienteMemoryRepository ..> Cliente : persiste
+
+' Relacionamentos com Exceções
+ValidacaoService ..> ValidationException : lança
+ClienteDBRepository ..> DatabaseException : lança
+ClienteDBRepository ..> DuplicateException : lança
+ClienteMemoryRepository ..> DuplicateException : lança
 @enduml
