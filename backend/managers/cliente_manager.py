@@ -1,6 +1,6 @@
 from models.cliente import Cliente
 from services.senha_service import SenhaService
-from services.validacao_service import ValidacaoService
+from services.validacao_usuario_service import ValidacaoUsuarioService
 from repositories.repository_factory import repository_factory
 
 
@@ -13,7 +13,7 @@ class ClienteManager:
         """
         self.cliente_repository = repository_factory.get_cliente_repository()
         self.senha_service = SenhaService()
-        self.validacao_service = ValidacaoService()
+        self.validacao_service = ValidacaoUsuarioService()
     
     def listar_clientes(self):
         """

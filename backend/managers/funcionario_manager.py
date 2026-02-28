@@ -1,6 +1,6 @@
 from models.funcionario import Funcionario
 from services.senha_service import SenhaService
-from services.validacao_service import ValidacaoService
+from services.validacao_usuario_service import ValidacaoUsuarioService
 from repositories.repository_factory import repository_factory
 
 
@@ -13,7 +13,7 @@ class FuncionarioManager:
         """
         self.funcionario_repository = repository_factory.get_funcionario_repository()
         self.senha_service = SenhaService()
-        self.validacao_service = ValidacaoService()
+        self.validacao_service = ValidacaoUsuarioService()
     
     def listar_funcionarios(self):
         """

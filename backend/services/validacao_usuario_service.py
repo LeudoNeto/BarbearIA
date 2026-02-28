@@ -2,7 +2,7 @@ import re
 from exceptions import ValidationException
 
 
-class ValidacaoService:
+class ValidacaoUsuarioService:
     """Service para validação de dados de usuário"""
     
     def validar_email(self, email: str) -> None:

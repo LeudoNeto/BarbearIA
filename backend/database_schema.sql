@@ -22,3 +22,30 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+-- Tabela da empresa (registro único)
+CREATE TABLE IF NOT EXISTS empresa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    endereco TEXT,
+    cnpj VARCHAR(18) UNIQUE,
+    telefone VARCHAR(20),
+    email VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Insere a empresa padrão caso ainda não exista
+INSERT INTO empresa (nome, descricao, endereco, cnpj, telefone, email)
+SELECT 'Minha Barbearia', 'Barbearia moderna com os melhores profissionais.', 'Rua Exemplo, 123 - Centro', '00.000.000/0001-00', '(00) 00000-0000', 'contato@minhabarbearia.com'
+WHERE NOT EXISTS (SELECT 1 FROM empresa);
+
+-- Tabela de horários de funcionamento
+CREATE TABLE IF NOT EXISTS horarios_funcionamento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    dia_semana TINYINT NOT NULL CHECK (dia_semana BETWEEN 0 AND 6),  -- 0 = Segunda, 6 = Domingo
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    UNIQUE KEY uq_dia_semana (dia_semana)
+);
