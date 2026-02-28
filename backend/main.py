@@ -4,6 +4,7 @@ from controllers.cliente_controller import cliente_controller
 from controllers.funcionario_controller import funcionario_controller
 from controllers.empresa_controller import empresa_controller
 from controllers.horario_funcionamento_controller import horario_funcionamento_controller
+from controllers.agendamento_controller import agendamento_controller
 
 
 # Inicializa a aplicação FastAPI
@@ -15,6 +16,7 @@ app.include_router(cliente_controller.router)
 app.include_router(funcionario_controller.router)
 app.include_router(empresa_controller.router)
 app.include_router(horario_funcionamento_controller.router)
+app.include_router(agendamento_controller.router)
 
 
 @app.get('/')
@@ -28,7 +30,8 @@ async def root():
             'clientes': '/clientes',
             'funcionarios': '/funcionarios',
             'empresa': '/empresa',
-            'horarios_funcionamento': '/horarios-funcionamento'
+            'horarios_funcionamento': '/horarios-funcionamento',
+            'agendamentos': '/agendamentos'
         }
     }
 

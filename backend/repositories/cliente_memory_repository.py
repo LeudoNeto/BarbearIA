@@ -19,6 +19,15 @@ class ClienteMemoryRepository:
         """
         return list(self._clientes.values())
     
+    def buscar_por_id(self, cliente_id):
+        """
+        Busca um cliente pelo ID
+        
+        :param cliente_id: ID do cliente
+        :return: Objeto Cliente ou None se não encontrado
+        """
+        return self._clientes.get(cliente_id)
+    
     def buscar_por_email(self, email):
         """
         Busca um cliente pelo email

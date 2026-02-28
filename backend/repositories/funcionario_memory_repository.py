@@ -19,6 +19,15 @@ class FuncionarioMemoryRepository:
         """
         return list(self._funcionarios.values())
     
+    def buscar_por_id(self, funcionario_id):
+        """
+        Busca um funcionário pelo ID
+        
+        :param funcionario_id: ID do funcionário
+        :return: Objeto Funcionario ou None se não encontrado
+        """
+        return self._funcionarios.get(funcionario_id)
+    
     def buscar_por_email(self, email):
         """
         Busca um funcionário pelo email

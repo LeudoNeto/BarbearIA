@@ -51,6 +51,40 @@ class FuncionarioDBRepository:
         finally:
             connection.close()
     
+    def buscar_por_id(self, funcionario_id):
+        """
+        Busca um funcionário pelo ID
+        
+        :param funcionario_id: ID do funcionário
+        :return: Objeto Funcionario ou None se não encontrado
+        """
+        connection = self._get_connection()
+        try:
+            with connection.cursor() as cursor:
+                sql = """
+                    SELECT id, email, senha, foto, eh_barbeiro, eh_admin 
+                    FROM funcionarios
+                    WHERE id = %s
+                """
+                cursor.execute(sql, (funcionario_id,))
+                row = cursor.fetchone()
+                
+                if row is None:
+                    return None
+                
+                return Funcionario(
+                    id=row['id'],
+                    email=row['email'],
+                    senha=row['senha'],
+                    foto=row['foto'],
+                    eh_barbeiro=bool(row['eh_barbeiro']),
+                    eh_admin=bool(row['eh_admin'])
+                )
+        except pymysql.Error as e:
+            raise DatabaseException(f"Erro ao buscar funcionário por ID: {str(e)}")
+        finally:
+            connection.close()
+    
     def buscar_por_email(self, email):
         """
         Busca um funcionário pelo email

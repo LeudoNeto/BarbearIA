@@ -50,6 +50,39 @@ class ClienteDBRepository:
         finally:
             connection.close()
     
+    def buscar_por_id(self, cliente_id):
+        """
+        Busca um cliente pelo ID
+        
+        :param cliente_id: ID do cliente
+        :return: Objeto Cliente ou None se não encontrado
+        """
+        connection = self._get_connection()
+        try:
+            with connection.cursor() as cursor:
+                sql = """
+                    SELECT id, email, senha, foto, telefone 
+                    FROM clientes
+                    WHERE id = %s
+                """
+                cursor.execute(sql, (cliente_id,))
+                row = cursor.fetchone()
+                
+                if row is None:
+                    return None
+                
+                return Cliente(
+                    id=row['id'],
+                    email=row['email'],
+                    senha=row['senha'],
+                    foto=row['foto'],
+                    telefone=row['telefone']
+                )
+        except pymysql.Error as e:
+            raise DatabaseException(f"Erro ao buscar cliente por ID: {str(e)}")
+        finally:
+            connection.close()
+    
     def buscar_por_email(self, email):
         """
         Busca um cliente pelo email

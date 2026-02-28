@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Response, Cookie
 from typing import Optional
 from managers.auth_manager import auth_manager
-from exceptions import ValidationException
 
 
 class AuthController:

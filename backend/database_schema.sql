@@ -49,3 +49,18 @@ CREATE TABLE IF NOT EXISTS horarios_funcionamento (
     hora_fim TIME NOT NULL,
     UNIQUE KEY uq_dia_semana (dia_semana)
 );
+
+-- Tabela de agendamentos
+CREATE TABLE IF NOT EXISTS agendamentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    inicio DATETIME NOT NULL,
+    fim DATETIME NOT NULL,
+    cliente_id INT NOT NULL,
+    barbeiro_id INT NOT NULL,
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE,
+    FOREIGN KEY (barbeiro_id) REFERENCES funcionarios(id) ON DELETE CASCADE,
+    INDEX idx_cliente (cliente_id),
+    INDEX idx_barbeiro (barbeiro_id),
+    INDEX idx_inicio (inicio),
+    INDEX idx_fim (fim)
+);

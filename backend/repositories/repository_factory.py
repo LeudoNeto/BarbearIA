@@ -63,6 +63,20 @@ class RepositoryFactory:
             from repositories.horario_funcionamento_db_repository import horario_funcionamento_db_repository
             return horario_funcionamento_db_repository
 
+    @staticmethod
+    def get_agendamento_repository():
+        """
+        Retorna o repositório de agendamento apropriado baseado na configuração
+
+        :return: Instância do repositório de agendamento
+        """
+        if persistence_config.is_memory():
+            from repositories.agendamento_memory_repository import agendamento_memory_repository
+            return agendamento_memory_repository
+        else:
+            from repositories.agendamento_db_repository import agendamento_db_repository
+            return agendamento_db_repository
+
 
 # Instância singleton
 repository_factory = RepositoryFactory()
