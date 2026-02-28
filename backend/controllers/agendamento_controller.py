@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from managers.agendamento_manager import agendamento_manager
+from controllers.facade_controller import facade_controller
 
 
 class AgendamentoController:
@@ -9,7 +9,7 @@ class AgendamentoController:
         """
         Inicializa o controller
         """
-        self.agendamento_manager = agendamento_manager
+        self.facade = facade_controller
         self.router = APIRouter(prefix='/agendamentos', tags=['Agendamentos'])
         self._registrar_rotas()
     
@@ -19,22 +19,22 @@ class AgendamentoController:
         @self.router.get('')
         async def listar_agendamentos():
             """Lista todos os agendamentos"""
-            return self.agendamento_manager.listar_agendamentos()
+            return self.facade.listar_agendamentos()
         
         @self.router.get('/{agendamento_id}')
         async def buscar_agendamento(agendamento_id: int):
             """Busca um agendamento pelo ID"""
-            return self.agendamento_manager.buscar_agendamento_por_id(agendamento_id)
+            return self.facade.buscar_agendamento_por_id(agendamento_id)
         
         @self.router.get('/cliente/{cliente_id}')
         async def buscar_agendamentos_por_cliente(cliente_id: int):
             """Busca todos os agendamentos de um cliente"""
-            return self.agendamento_manager.buscar_agendamentos_por_cliente(cliente_id)
+            return self.facade.buscar_agendamentos_por_cliente(cliente_id)
         
         @self.router.get('/barbeiro/{barbeiro_id}')
         async def buscar_agendamentos_por_barbeiro(barbeiro_id: int):
             """Busca todos os agendamentos de um barbeiro"""
-            return self.agendamento_manager.buscar_agendamentos_por_barbeiro(barbeiro_id)
+            return self.facade.buscar_agendamentos_por_barbeiro(barbeiro_id)
         
         @self.router.post('', status_code=201)
         async def criar_agendamento(dados: dict):
@@ -47,7 +47,7 @@ class AgendamentoController:
             - cliente_id: int
             - barbeiro_id: int
             """
-            return self.agendamento_manager.criar_agendamento(dados)
+            return self.facade.criar_agendamento(dados)
         
         @self.router.put('/{agendamento_id}')
         async def atualizar_agendamento(agendamento_id: int, dados: dict):
@@ -60,12 +60,12 @@ class AgendamentoController:
             - cliente_id: int - opcional
             - barbeiro_id: int - opcional
             """
-            return self.agendamento_manager.atualizar_agendamento(agendamento_id, dados)
+            return self.facade.atualizar_agendamento(agendamento_id, dados)
         
         @self.router.delete('/{agendamento_id}')
         async def deletar_agendamento(agendamento_id: int):
             """Deleta um agendamento"""
-            self.agendamento_manager.deletar_agendamento(agendamento_id)
+            self.facade.deletar_agendamento(agendamento_id)
             return {"message": "Agendamento deletado com sucesso"}
 
 

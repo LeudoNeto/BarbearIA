@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from managers.empresa_manager import empresa_manager
+from controllers.facade_controller import facade_controller
 
 
 class EmpresaController:
@@ -9,7 +9,7 @@ class EmpresaController:
         """
         Inicializa o controller
         """
-        self.empresa_manager = empresa_manager
+        self.facade = facade_controller
         self.router = APIRouter(prefix='/empresa', tags=['Empresa'])
         self._registrar_rotas()
 
@@ -19,12 +19,12 @@ class EmpresaController:
         @self.router.get('')
         async def buscar_empresa():
             """Retorna os dados da empresa"""
-            return self.empresa_manager.buscar_empresa()
+            return self.facade.buscar_empresa()
 
         @self.router.put('')
         async def atualizar_empresa(dados: dict):
             """Atualiza os dados da empresa"""
-            return self.empresa_manager.atualizar_empresa(dados)
+            return self.facade.atualizar_empresa(dados)
 
 
 # Instância singleton

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, Cookie
 from typing import Optional
-from managers.auth_manager import auth_manager
+from controllers.facade_controller import facade_controller
 
 
 class AuthController:
@@ -10,7 +10,7 @@ class AuthController:
         """
         Inicializa o controller
         """
-        self.auth_manager = auth_manager
+        self.facade = facade_controller
         self.router = APIRouter(prefix='/auth', tags=['Autenticação'])
         self._registrar_rotas()
     
@@ -29,7 +29,7 @@ class AuthController:
             Retorna os dados do usuário com o campo 'tipo' indicando se é 'cliente' ou 'funcionario'
             Define um cookie de sessão para autenticação
             """
-            usuario_dict, session_id = self.auth_manager.login(dados)
+            usuario_dict, session_id = self.facade.login(dados)
             
             # Define cookie de sessão (HttpOnly para segurança)
             response.set_cookie(
@@ -49,7 +49,7 @@ class AuthController:
             
             Requer cookie de sessão válido
             """
-            return self.auth_manager.obter_usuario_logado(session_id)
+            return self.facade.obter_usuario_logado(session_id)
         
         @self.router.post('/logout')
         async def logout(response: Response, session_id: Optional[str] = Cookie(None)):
@@ -59,7 +59,7 @@ class AuthController:
             Remove a sessão e o cookie
             """
             if session_id:
-                self.auth_manager.logout(session_id)
+                self.facade.logout(session_id)
             
             # Remove o cookie
             response.delete_cookie(key="session_id")
@@ -77,7 +77,7 @@ class AuthController:
             - telefone: string (obrigatório)
             - foto: string (opcional)
             """
-            return self.auth_manager.signup(dados)
+            return self.facade.signup(dados)
 
 
 # Instância singleton
