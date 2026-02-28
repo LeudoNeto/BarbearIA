@@ -151,6 +151,24 @@ class FuncionarioDBRepository:
             raise DatabaseException(f"Erro ao criar funcionário: {str(e)}")
         finally:
             connection.close()
+    
+    def contar(self):
+        """
+        Conta o número total de funcionários no banco de dados
+        
+        :return: int com a quantidade de funcionários
+        """
+        connection = self._get_connection()
+        try:
+            with connection.cursor() as cursor:
+                sql = "SELECT COUNT(*) as total FROM funcionarios"
+                cursor.execute(sql)
+                row = cursor.fetchone()
+                return row['total']
+        except pymysql.Error as e:
+            raise DatabaseException(f"Erro ao contar funcionários: {str(e)}")
+        finally:
+            connection.close()
 
 
 # Instância singleton

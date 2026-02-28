@@ -56,6 +56,14 @@ class ClienteManager:
         cliente.id = cliente_id
         
         return cliente.to_dict()
+    
+    def contar_clientes(self):
+        """
+        Conta o número total de clientes
+        
+        :return: int com a quantidade de clientes
+        """
+        return self.cliente_repository.contar()
 
 
 # Instância singleton

@@ -238,6 +238,24 @@ class AgendamentoDBRepository:
             raise DatabaseException(f"Erro ao deletar agendamento: {str(e)}")
         finally:
             connection.close()
+    
+    def contar(self):
+        """
+        Conta o número total de agendamentos no banco de dados
+        
+        :return: int com a quantidade de agendamentos
+        """
+        connection = self._get_connection()
+        try:
+            with connection.cursor() as cursor:
+                sql = "SELECT COUNT(*) as total FROM agendamentos"
+                cursor.execute(sql)
+                row = cursor.fetchone()
+                return row['total']
+        except pymysql.Error as e:
+            raise DatabaseException(f"Erro ao contar agendamentos: {str(e)}")
+        finally:
+            connection.close()
 
 
 # Instância singleton

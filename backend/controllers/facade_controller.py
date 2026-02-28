@@ -226,6 +226,20 @@ class FacadeSingletonController:
         :return: bool indicando sucesso
         """
         return self.agendamento_manager.deletar_agendamento(agendamento_id)
+    
+    # ==================== ESTATÍSTICAS METHODS ====================
+    
+    def obter_estatisticas_sistema(self):
+        """
+        Obtém estatísticas gerais do sistema (contagem de todas as entidades)
+        
+        :return: dict com contagens de todas as entidades
+        """
+        return {
+            'clientes': self.cliente_manager.contar_clientes(),
+            'funcionarios': self.funcionario_manager.contar_funcionarios(),
+            'agendamentos': self.agendamento_manager.contar_agendamentos()
+        }
 
 
 # Instância singleton

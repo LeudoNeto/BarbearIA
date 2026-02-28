@@ -86,6 +86,14 @@ class AgendamentoMemoryRepository:
         
         del self._agendamentos[agendamento_id]
         return True
+    
+    def contar(self):
+        """
+        Conta o número total de agendamentos
+        
+        :return: int com a quantidade de agendamentos
+        """
+        return len(self._agendamentos)
 
 
 # Instância singleton

@@ -58,6 +58,14 @@ class FuncionarioMemoryRepository:
         self._next_id += 1
         
         return funcionario.id
+    
+    def contar(self):
+        """
+        Conta o número total de funcionários
+        
+        :return: int com a quantidade de funcionários
+        """
+        return len(self._funcionarios)
 
 
 # Instância singleton

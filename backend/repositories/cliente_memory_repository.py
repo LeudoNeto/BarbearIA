@@ -58,6 +58,14 @@ class ClienteMemoryRepository:
         self._next_id += 1
         
         return cliente.id
+    
+    def contar(self):
+        """
+        Conta o número total de clientes
+        
+        :return: int com a quantidade de clientes
+        """
+        return len(self._clientes)
 
 
 # Instância singleton

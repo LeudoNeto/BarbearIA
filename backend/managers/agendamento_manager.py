@@ -165,6 +165,14 @@ class AgendamentoManager:
         :return: bool indicando sucesso
         """
         return self.agendamento_repository.deletar(agendamento_id)
+    
+    def contar_agendamentos(self):
+        """
+        Conta o número total de agendamentos
+        
+        :return: int com a quantidade de agendamentos
+        """
+        return self.agendamento_repository.contar()
 
 
 # Instância singleton

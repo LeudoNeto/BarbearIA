@@ -58,6 +58,14 @@ class FuncionarioManager:
         funcionario.id = funcionario_id
         
         return funcionario.to_dict()
+    
+    def contar_funcionarios(self):
+        """
+        Conta o número total de funcionários
+        
+        :return: int com a quantidade de funcionários
+        """
+        return self.funcionario_repository.contar()
 
 
 # Instância singleton

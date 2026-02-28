@@ -147,6 +147,24 @@ class ClienteDBRepository:
             raise DatabaseException(f"Erro ao criar cliente: {str(e)}")
         finally:
             connection.close()
+    
+    def contar(self):
+        """
+        Conta o número total de clientes no banco de dados
+        
+        :return: int com a quantidade de clientes
+        """
+        connection = self._get_connection()
+        try:
+            with connection.cursor() as cursor:
+                sql = "SELECT COUNT(*) as total FROM clientes"
+                cursor.execute(sql)
+                row = cursor.fetchone()
+                return row['total']
+        except pymysql.Error as e:
+            raise DatabaseException(f"Erro ao contar clientes: {str(e)}")
+        finally:
+            connection.close()
 
 
 # Instância singleton
