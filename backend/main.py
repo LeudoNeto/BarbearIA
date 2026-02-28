@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from controllers.auth_controller import auth_controller
 from controllers.cliente_controller import cliente_controller
 from controllers.funcionario_controller import funcionario_controller
 from controllers.empresa_controller import empresa_controller
@@ -9,6 +10,7 @@ from controllers.horario_funcionamento_controller import horario_funcionamento_c
 app = FastAPI(title='BarbearIA API', version='1.0.0')
 
 # Registra as rotas
+app.include_router(auth_controller.router)
 app.include_router(cliente_controller.router)
 app.include_router(funcionario_controller.router)
 app.include_router(empresa_controller.router)
@@ -22,6 +24,7 @@ async def root():
         'message': 'BarbearIA API',
         'version': '1.0.0',
         'endpoints': {
+            'auth': '/auth',
             'clientes': '/clientes',
             'funcionarios': '/funcionarios',
             'empresa': '/empresa',

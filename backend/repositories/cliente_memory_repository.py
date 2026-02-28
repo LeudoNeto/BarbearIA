@@ -19,6 +19,18 @@ class ClienteMemoryRepository:
         """
         return list(self._clientes.values())
     
+    def buscar_por_email(self, email):
+        """
+        Busca um cliente pelo email
+        
+        :param email: Email do cliente
+        :return: Objeto Cliente ou None se não encontrado
+        """
+        for cliente in self._clientes.values():
+            if cliente.email == email:
+                return cliente
+        return None
+    
     def criar(self, cliente):
         """
         Cria um novo cliente em memória

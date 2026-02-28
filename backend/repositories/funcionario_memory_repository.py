@@ -19,6 +19,18 @@ class FuncionarioMemoryRepository:
         """
         return list(self._funcionarios.values())
     
+    def buscar_por_email(self, email):
+        """
+        Busca um funcionário pelo email
+        
+        :param email: Email do funcionário
+        :return: Objeto Funcionario ou None se não encontrado
+        """
+        for funcionario in self._funcionarios.values():
+            if funcionario.email == email:
+                return funcionario
+        return None
+    
     def criar(self, funcionario):
         """
         Cria um novo funcionário em memória
