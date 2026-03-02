@@ -20,14 +20,28 @@ class FacadeSingletonController:
     uma camada de abstração entre os controllers de rotas e a lógica de negócios.
     """
     
+    _instance = None
+    _initialized = False
+
+    def __new__(cls):
+        """Implementação do padrão Singleton para garantir instância única"""
+        if cls._instance is None:
+            cls._instance = super(FacadeSingletonController, cls).__new__(cls)
+        return cls._instance
+    
     def __init__(self):
-        """Inicializa o facade com referências a todos os managers"""
+        """Inicializa o facade com referências a todos os managers apenas uma vez"""
+        if FacadeSingletonController._initialized:
+            return
+            
         self.auth_manager = auth_manager
         self.cliente_manager = cliente_manager
         self.funcionario_manager = funcionario_manager
         self.empresa_manager = empresa_manager
         self.horario_funcionamento_manager = horario_funcionamento_manager
         self.agendamento_manager = agendamento_manager
+        
+        FacadeSingletonController._initialized = True
     
     # ==================== AUTH METHODS ====================
     
