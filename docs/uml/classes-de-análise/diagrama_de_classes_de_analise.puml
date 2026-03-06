@@ -1,0 +1,183 @@
+@startuml Sistema de Agendamento - Diagrama de Classes
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam packageFontSize 13
+skinparam linetype ortho
+
+' ==================== MODELS ====================
+package "MODELS" #LightYellow {
+    class Usuario {}
+    class Cliente {}
+    class Funcionario {}
+    class Empresa {}
+    class Agendamento {
+        cliente_id
+        barbeiro_id
+    }
+    class HorarioFuncionamento {}
+}
+
+' ==================== MANAGERS ====================
+package "MANAGERS" #LightBlue {
+    class AuthManager {}
+    class ClienteManager {}
+    class FuncionarioManager {}
+    class EmpresaManager {}
+    class AgendamentoManager {}
+    class HorarioFuncionamentoManager {}
+}
+
+' ==================== CONTROLLERS ====================
+package "CONTROLLERS" #LightGreen {
+    class FacadeSingletonController {}
+    class AuthController {}
+    class ClienteController {}
+    class FuncionarioController {}
+    class EmpresaController {}
+    class AgendamentoController {}
+    class HorarioFuncionamentoController {}
+    class EstatisticasController {}
+}
+
+' ==================== SERVICES ====================
+package "SERVICES" #LightCoral {
+    class SenhaService {}
+    class SessionService {}
+    class ValidacaoUsuarioService {}
+    class ValidacaoAgendamentoService {}
+    class ValidacaoHorarioService {}
+}
+
+' ==================== REPOSITORIES ====================
+package "REPOSITORIES" #Plum {
+    class RepositoryFactory {}
+    class ClienteDBRepository {}
+    class ClienteMemoryRepository {}
+    class FuncionarioDBRepository {}
+    class FuncionarioMemoryRepository {}
+    class EmpresaDBRepository {}
+    class EmpresaMemoryRepository {}
+    class AgendamentoDBRepository {}
+    class AgendamentoMemoryRepository {}
+    class HorarioFuncionamentoDBRepository {}
+    class HorarioFuncionamentoMemoryRepository {}
+}
+
+' ==================== EXCEPTIONS ====================
+package "EXCEPTIONS" #LightGray {
+    class HTTPException {}
+    class ValidationException {}
+    class DatabaseException {}
+    class DatabaseConnectionException {}
+    class DuplicateException {}
+    class NotFoundException {}
+    class UnauthorizedException {}
+}
+
+' ==================== CONFIGURATION ====================
+package "CONFIGURAÇÃO" #WhiteSmoke {
+    class PersistenceConfig {}
+}
+
+' ==================== HERANÇA ====================
+Usuario <|-- Cliente
+Usuario <|-- Funcionario
+
+HTTPException <|-- ValidationException
+HTTPException <|-- DatabaseException
+HTTPException <|-- DatabaseConnectionException
+HTTPException <|-- DuplicateException
+HTTPException <|-- NotFoundException
+HTTPException <|-- UnauthorizedException
+
+' ==================== COMPOSIÇÃO ====================
+Agendamento *-- Cliente
+Agendamento *-- Funcionario
+
+' ==================== ASSOCIAÇÕES - AuthManager ====================
+AuthManager --> ClienteManager
+AuthManager --> RepositoryFactory
+AuthManager --> SenhaService
+AuthManager --> SessionService
+
+' ==================== ASSOCIAÇÕES - ClienteManager ====================
+ClienteManager --> Cliente
+ClienteManager --> RepositoryFactory
+ClienteManager --> SenhaService
+ClienteManager --> ValidacaoUsuarioService
+
+' ==================== ASSOCIAÇÕES - FuncionarioManager ====================
+FuncionarioManager --> Funcionario
+FuncionarioManager --> RepositoryFactory
+FuncionarioManager --> SenhaService
+FuncionarioManager --> ValidacaoUsuarioService
+
+' ==================== ASSOCIAÇÕES - EmpresaManager ====================
+EmpresaManager --> RepositoryFactory
+EmpresaManager --> ValidacaoUsuarioService
+
+' ==================== ASSOCIAÇÕES - AgendamentoManager ====================
+AgendamentoManager --> Agendamento
+AgendamentoManager --> RepositoryFactory
+AgendamentoManager --> ValidacaoAgendamentoService
+
+' ==================== ASSOCIAÇÕES - HorarioFuncionamentoManager ====================
+HorarioFuncionamentoManager --> HorarioFuncionamento
+HorarioFuncionamentoManager --> ValidacaoHorarioService
+HorarioFuncionamentoManager --> RepositoryFactory
+
+' ==================== ASSOCIAÇÕES - FacadeSingletonController ====================
+FacadeSingletonController --> AuthManager
+FacadeSingletonController --> ClienteManager
+FacadeSingletonController --> FuncionarioManager
+FacadeSingletonController --> EmpresaManager
+FacadeSingletonController --> AgendamentoManager
+FacadeSingletonController --> HorarioFuncionamentoManager
+
+' ==================== CONTROLLERS → FACADE ====================
+AuthController --> FacadeSingletonController
+ClienteController --> FacadeSingletonController
+FuncionarioController --> FacadeSingletonController
+EmpresaController --> FacadeSingletonController
+AgendamentoController --> FacadeSingletonController
+HorarioFuncionamentoController --> FacadeSingletonController
+EstatisticasController --> FacadeSingletonController
+
+' ==================== REPOSITORY FACTORY (tracejado) ====================
+RepositoryFactory ..> ClienteDBRepository
+RepositoryFactory ..> ClienteMemoryRepository
+RepositoryFactory ..> FuncionarioDBRepository
+RepositoryFactory ..> FuncionarioMemoryRepository
+RepositoryFactory ..> EmpresaDBRepository
+RepositoryFactory ..> EmpresaMemoryRepository
+RepositoryFactory ..> AgendamentoDBRepository
+RepositoryFactory ..> AgendamentoMemoryRepository
+RepositoryFactory ..> HorarioFuncionamentoDBRepository
+RepositoryFactory ..> HorarioFuncionamentoMemoryRepository
+
+' ==================== CONFIGURAÇÃO ====================
+RepositoryFactory --> PersistenceConfig
+
+' ==================== SERVICES → EXCEPTIONS ====================
+ValidacaoUsuarioService --> ValidationException
+ValidacaoAgendamentoService --> ValidationException
+ValidacaoHorarioService --> ValidationException
+SessionService --> ValidationException
+
+' ==================== MANAGERS → EXCEPTIONS ====================
+AuthManager --> ValidationException
+AgendamentoManager --> NotFoundException
+
+' ==================== REPOSITORIES DB → EXCEPTIONS ====================
+ClienteDBRepository --> DatabaseException
+ClienteDBRepository --> DuplicateException
+FuncionarioDBRepository --> DatabaseException
+FuncionarioDBRepository --> DuplicateException
+EmpresaDBRepository --> DatabaseException
+AgendamentoDBRepository --> DatabaseException
+AgendamentoDBRepository --> NotFoundException
+HorarioFuncionamentoDBRepository --> DatabaseException
+HorarioFuncionamentoDBRepository --> NotFoundException
+
+@enduml
