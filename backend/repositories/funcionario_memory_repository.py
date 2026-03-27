@@ -1,7 +1,8 @@
 from exceptions import DuplicateException
+from repositories.interfaces.funcionario_repository_interface import FuncionarioRepositoryInterface
 
 
-class FuncionarioMemoryRepository:
+class FuncionarioMemoryRepository(FuncionarioRepositoryInterface):
     """Repositório em memória para operações de persistência de Funcionario"""
     
     def __init__(self):

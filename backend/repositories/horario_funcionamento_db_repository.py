@@ -2,9 +2,10 @@ from models.horario_funcionamento import HorarioFuncionamento
 from config.database import DBConnection
 from exceptions import DatabaseException, NotFoundException, DuplicateException
 import pymysql
+from repositories.interfaces.horario_funcionamento_repository_interface import HorarioFuncionamentoRepositoryInterface
 
 
-class HorarioFuncionamentoDBRepository:
+class HorarioFuncionamentoDBRepository(HorarioFuncionamentoRepositoryInterface):
     """Repositório para operações de persistência de HorarioFuncionamento em banco de dados"""
 
     def __init__(self):

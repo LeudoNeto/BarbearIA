@@ -1,7 +1,8 @@
 from models.empresa import Empresa
+from repositories.interfaces.empresa_repository_interface import EmpresaRepositoryInterface
 
 
-class EmpresaMemoryRepository:
+class EmpresaMemoryRepository(EmpresaRepositoryInterface):
     """Repositório em memória para operações de persistência de Empresa"""
 
     def __init__(self):

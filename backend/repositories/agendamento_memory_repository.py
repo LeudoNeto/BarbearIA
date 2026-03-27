@@ -1,8 +1,9 @@
 from models.agendamento import Agendamento
 from exceptions import NotFoundException
+from repositories.interfaces.agendamento_repository_interface import AgendamentoRepositoryInterface
 
 
-class AgendamentoMemoryRepository:
+class AgendamentoMemoryRepository(AgendamentoRepositoryInterface):
     """Repositório em memória para operações de persistência de Agendamento"""
     
     def __init__(self):

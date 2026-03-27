@@ -2,10 +2,10 @@ from models.agendamento import Agendamento
 from config.database import DBConnection
 from exceptions import DatabaseException, NotFoundException
 import pymysql
-from datetime import datetime
+from repositories.interfaces.agendamento_repository_interface import AgendamentoRepositoryInterface
 
 
-class AgendamentoDBRepository:
+class AgendamentoDBRepository(AgendamentoRepositoryInterface):
     """Repositório para operações de persistência de Agendamento em banco de dados"""
     
     def __init__(self):

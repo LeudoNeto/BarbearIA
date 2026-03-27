@@ -2,9 +2,10 @@ from models.cliente import Cliente
 from config.database import DBConnection
 from exceptions import DatabaseException, DuplicateException
 import pymysql
+from repositories.interfaces.cliente_repository_interface import ClienteRepositoryInterface
 
 
-class ClienteDBRepository:
+class ClienteDBRepository(ClienteRepositoryInterface):
     """Repositório para operações de persistência de Cliente em banco de dados"""
     
     def __init__(self):
