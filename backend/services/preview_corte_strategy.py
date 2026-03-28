@@ -19,15 +19,17 @@ class PreviewCorteStrategy(ABC):
 class OpenAIPreviewCorteStrategy(PreviewCorteStrategy):
     """Strategy concreta que usa OpenAI para gerar preview real."""
 
-    def __init__(self, adapter: OpenAIImageAdapter, diretorio_saida: str):
+    def __init__(self, adapter: OpenAIImageAdapter, diretorio_saida: str, preview_public_base_url: str):
         """
         Inicializa strategy da OpenAI.
 
         :param adapter: Adapter da OpenAI
         :param diretorio_saida: Diretório absoluto para salvar previews gerados
+        :param preview_public_base_url: URL base pública do serviço estático
         """
         self.adapter = adapter
         self.diretorio_saida = diretorio_saida
+        self.preview_public_base_url = preview_public_base_url.rstrip("/")
 
     def gerar_preview(self, imagem_pessoa_bytes: bytes, imagem_corte_bytes: bytes) -> str:
         """
@@ -61,12 +63,20 @@ class OpenAIPreviewCorteStrategy(PreviewCorteStrategy):
         with open(caminho_arquivo, "wb") as arquivo:
             arquivo.write(imagem_gerada_bytes)
 
-        return os.path.join("backend", "generated_previews", nome_arquivo)
+        return f"{self.preview_public_base_url}/previews/{nome_arquivo}"
 
 
 class MockPreviewCorteStrategy(PreviewCorteStrategy):
     """Strategy mockada para testes sem integração externa."""
 
+    def __init__(self, preview_public_base_url: str):
+        """
+        Inicializa strategy mockada.
+
+        :param preview_public_base_url: URL base pública do serviço estático
+        """
+        self.preview_public_base_url = preview_public_base_url.rstrip("/")
+
     def gerar_preview(self, imagem_pessoa_bytes: bytes, imagem_corte_bytes: bytes) -> str:
         """Retorna preview fixo para testes."""
-        return "backend\\preview_corte_default.png"
+        return f"{self.preview_public_base_url}/previews/preview_corte_default.png"

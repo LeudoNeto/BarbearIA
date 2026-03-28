@@ -33,3 +33,7 @@ dist-ssr
 
 # Back-end Media
 /backend/media
+
+# Previews de cortes gerados
+/backend/static/previews/preview_corte_*.png
+!/backend/static/previews/preview_corte_default.png

@@ -1,4 +1,6 @@
 import os
+import shutil
+from config.preview import preview_config
 from exceptions import ValidationException
 from services.preview_corte_adapter import OpenAIImageAdapter
 from services.preview_corte_strategy import (
@@ -15,22 +17,43 @@ class PreviewCorteManager:
         """
         Inicializa o manager e prepara as strategies disponíveis.
         """
-        self.mock_strategy = MockPreviewCorteStrategy()
+        self.diretorio_previews = preview_config.preview_static_dir
+        self.preview_public_base_url = preview_config.preview_base_url
+
+        os.makedirs(self.diretorio_previews, exist_ok=True)
+        self._garantir_preview_default()
+
+        self.mock_strategy = MockPreviewCorteStrategy(
+            preview_public_base_url=self.preview_public_base_url
+        )
         self.openai_strategy = self._criar_openai_strategy()
+
+    def _garantir_preview_default(self):
+        """
+        Garante que o preview padrão exista na pasta estática de previews.
+        """
+        destino_default = preview_config.preview_default_path
+        if os.path.exists(destino_default):
+            return
+
+        origem_legada = preview_config.preview_default_legacy_path
+        if os.path.exists(origem_legada):
+            shutil.copyfile(origem_legada, destino_default)
 
     def _criar_openai_strategy(self):
         """
         Cria strategy da OpenAI se houver API key configurada.
         """
-        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("OPENAPI_API_KEY")
+        api_key = preview_config.openai_api_key
         if not api_key:
             return None
 
-        diretorio_backend = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        diretorio_saida = os.path.join(diretorio_backend, "generated_previews")
-
         adapter = OpenAIImageAdapter(api_key=api_key)
-        return OpenAIPreviewCorteStrategy(adapter=adapter, diretorio_saida=diretorio_saida)
+        return OpenAIPreviewCorteStrategy(
+            adapter=adapter,
+            diretorio_saida=self.diretorio_previews,
+            preview_public_base_url=self.preview_public_base_url
+        )
 
     def _selecionar_strategy(self, usar_mock: bool) -> PreviewCorteStrategy:
         """
