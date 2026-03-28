@@ -120,6 +120,34 @@ POST /auth/logout
 }
 ```
 
+#### Obter RelatÃ³rio HTML de Acessos dos UsuÃ¡rios
+
+```http
+GET /estatisticas/acessos/relatorio-html
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatorio de Acessos</title>
+</head>
+<body>
+  <header>
+    <h1>Relatorio de Acessos dos Usuarios</h1>
+  </header>
+  <section>
+    <h2>Usuarios que acessaram</h2>
+  </section>
+</body>
+</html>
+```
+
+> **Nota:** Retorna o relatÃ³rio de acessos em HTML renderizÃ¡vel no navegador, gerado com Template Method a partir das estatÃ­sticas consolidadas de login.
+
 ---
 
 ### Clientes
@@ -666,6 +694,36 @@ GET /estatisticas/acessos
 ```
 
 > **Nota:** Retorna estatísticas agregadas com base no histórico de logins bem-sucedidos registrados na tabela `acessos_usuario`.
+
+---
+
+#### Obter RelatÃ³rio HTML de Acessos dos UsuÃ¡rios
+
+```http
+GET /estatisticas/acessos/relatorio-html
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatorio de Acessos</title>
+</head>
+<body>
+  <header>
+    <h1>Relatorio de Acessos dos Usuarios</h1>
+  </header>
+  <section>
+    <h2>Usuarios que acessaram</h2>
+  </section>
+</body>
+</html>
+```
+
+> **Nota:** Retorna o relatÃ³rio de acessos em HTML renderizÃ¡vel no navegador, gerado com Template Method a partir das estatÃ­sticas consolidadas de login.
 
 ---
 
