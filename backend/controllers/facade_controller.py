@@ -10,6 +10,7 @@ from managers.funcionario_manager import funcionario_manager
 from managers.empresa_manager import empresa_manager
 from managers.horario_funcionamento_manager import horario_funcionamento_manager
 from managers.agendamento_manager import agendamento_manager
+from managers.preview_corte_manager import preview_corte_manager
 
 
 class FacadeSingletonController:
@@ -40,6 +41,7 @@ class FacadeSingletonController:
         self.empresa_manager = empresa_manager
         self.horario_funcionamento_manager = horario_funcionamento_manager
         self.agendamento_manager = agendamento_manager
+        self.preview_corte_manager = preview_corte_manager
         
         FacadeSingletonController._initialized = True
     
@@ -254,6 +256,23 @@ class FacadeSingletonController:
             'funcionarios': self.funcionario_manager.contar_funcionarios(),
             'agendamentos': self.agendamento_manager.contar_agendamentos()
         }
+
+    # ==================== PREVIEW CORTE METHODS ====================
+
+    def gerar_preview_corte(self, imagem_pessoa_bytes: bytes, imagem_corte_bytes: bytes, usar_mock: bool = False):
+        """
+        Gera preview de corte com IA.
+
+        :param imagem_pessoa_bytes: bytes da imagem da pessoa
+        :param imagem_corte_bytes: bytes da imagem de referência do corte
+        :param usar_mock: força strategy mockada para testes
+        :return: dict com caminho do preview e strategy utilizada
+        """
+        return self.preview_corte_manager.gerar_preview_corte(
+            imagem_pessoa_bytes=imagem_pessoa_bytes,
+            imagem_corte_bytes=imagem_corte_bytes,
+            usar_mock=usar_mock
+        )
 
 
 # Instância singleton
