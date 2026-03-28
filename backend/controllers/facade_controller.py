@@ -12,6 +12,7 @@ from managers.estatisticas_acesso_manager import estatisticas_acesso_manager
 from managers.funcionario_manager import funcionario_manager
 from managers.horario_funcionamento_manager import horario_funcionamento_manager
 from managers.preview_corte_manager import preview_corte_manager
+from managers.relatorio_acesso_manager import relatorio_acesso_manager
 
 
 class FacadeSingletonController:
@@ -44,6 +45,7 @@ class FacadeSingletonController:
         self.agendamento_manager = agendamento_manager
         self.estatisticas_acesso_manager = estatisticas_acesso_manager
         self.preview_corte_manager = preview_corte_manager
+        self.relatorio_acesso_manager = relatorio_acesso_manager
 
         FacadeSingletonController._initialized = True
 
@@ -266,6 +268,14 @@ class FacadeSingletonController:
         :return: dict com dados consolidados dos acessos
         """
         return self.estatisticas_acesso_manager.obter_estatisticas_acesso()
+
+    def gerar_relatorio_acessos_html(self):
+        """
+        Gera o relatorio de acessos em HTML.
+
+        :return: string HTML com o relatorio consolidado
+        """
+        return self.relatorio_acesso_manager.gerar_relatorio_acessos_html()
 
     # ==================== PREVIEW CORTE METHODS ====================
 

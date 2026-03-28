@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import HTMLResponse
 
 from controllers.facade_controller import facade_controller
 
@@ -42,6 +43,13 @@ class EstatisticasController:
             - acessos_por_tipo_usuario
             """
             return self.facade.obter_estatisticas_acesso()
+
+        @self.router.get('/acessos/relatorio-html', response_class=HTMLResponse)
+        async def obter_relatorio_html_acessos():
+            """
+            Gera e retorna o relatorio HTML de acessos dos usuarios.
+            """
+            return self.facade.gerar_relatorio_acessos_html()
 
 
 estatisticas_controller = EstatisticasController()

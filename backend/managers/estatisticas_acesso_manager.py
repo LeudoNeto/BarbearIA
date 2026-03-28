@@ -10,13 +10,30 @@ class EstatisticasAcessoManager:
     def __init__(self):
         self.acesso_usuario_repository = repository_factory.get_acesso_usuario_repository()
 
+    def listar_acessos_brutos(self):
+        """
+        Lista os registros brutos de acesso.
+
+        :return: lista de objetos AcessoUsuario
+        """
+        return self.acesso_usuario_repository.listar()
+
     def obter_estatisticas_acesso(self):
         """
         Consolida estatisticas de acesso a partir do historico de logins.
 
         :return: dict com agregacoes de acessos
         """
-        acessos = self.acesso_usuario_repository.listar()
+        acessos = self.listar_acessos_brutos()
+        return self.consolidar_estatisticas(acessos)
+
+    def consolidar_estatisticas(self, acessos):
+        """
+        Consolida estatisticas a partir de uma lista de acessos.
+
+        :param acessos: lista de objetos AcessoUsuario
+        :return: dict com agregacoes de acessos
+        """
 
         usuarios_index = {}
         acessos_por_dia = defaultdict(int)
