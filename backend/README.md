@@ -120,34 +120,6 @@ POST /auth/logout
 }
 ```
 
-#### Obter RelatÃ³rio HTML de Acessos dos UsuÃ¡rios
-
-```http
-GET /estatisticas/acessos/relatorio-html
-```
-
-**Exemplo de Resposta (200 OK):**
-
-```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Relatorio de Acessos</title>
-</head>
-<body>
-  <header>
-    <h1>Relatorio de Acessos dos Usuarios</h1>
-  </header>
-  <section>
-    <h2>Usuarios que acessaram</h2>
-  </section>
-</body>
-</html>
-```
-
-> **Nota:** Retorna o relatÃ³rio de acessos em HTML renderizÃ¡vel no navegador, gerado com Template Method a partir das estatÃ­sticas consolidadas de login.
-
 ---
 
 ### Clientes
@@ -697,7 +669,7 @@ GET /estatisticas/acessos
 
 ---
 
-#### Obter RelatÃ³rio HTML de Acessos dos UsuÃ¡rios
+#### Obter Relatório HTML de Acessos dos Usuários
 
 ```http
 GET /estatisticas/acessos/relatorio-html
@@ -723,7 +695,23 @@ GET /estatisticas/acessos/relatorio-html
 </html>
 ```
 
-> **Nota:** Retorna o relatÃ³rio de acessos em HTML renderizÃ¡vel no navegador, gerado com Template Method a partir das estatÃ­sticas consolidadas de login.
+> **Nota:** Retorna o relatório de acessos em HTML renderizável no navegador, gerado com Template Method a partir das estatísticas consolidadas de login.
+
+---
+
+#### Obter Relatório PDF de Acessos dos Usuários
+
+```http
+GET /estatisticas/acessos/relatorio-pdf
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```text
+Conteúdo binário PDF retornado com Content-Type: application/pdf
+```
+
+> **Nota:** Retorna o relatório de acessos em PDF, gerado com a mesma estrutura de Template Method usada no relatório HTML.
 
 ---
 
