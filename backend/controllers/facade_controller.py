@@ -277,6 +277,14 @@ class FacadeSingletonController:
         """
         return self.relatorio_acesso_manager.gerar_relatorio_acessos_html()
 
+    def gerar_relatorio_acessos_pdf(self):
+        """
+        Gera o relatorio de acessos em PDF.
+
+        :return: bytes do PDF com o relatorio consolidado
+        """
+        return self.relatorio_acesso_manager.gerar_relatorio_acessos_pdf()
+
     # ==================== PREVIEW CORTE METHODS ====================
 
     def gerar_preview_corte(self, imagem_pessoa_bytes: bytes, imagem_corte_bytes: bytes, usar_mock: bool = False):

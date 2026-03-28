@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi import Response
 from fastapi.responses import HTMLResponse
 
 from controllers.facade_controller import facade_controller
@@ -50,6 +51,18 @@ class EstatisticasController:
             Gera e retorna o relatorio HTML de acessos dos usuarios.
             """
             return self.facade.gerar_relatorio_acessos_html()
+
+        @self.router.get('/acessos/relatorio-pdf')
+        async def obter_relatorio_pdf_acessos():
+            """
+            Gera e retorna o relatorio PDF de acessos dos usuarios.
+            """
+            pdf_bytes = self.facade.gerar_relatorio_acessos_pdf()
+            return Response(
+                content=pdf_bytes,
+                media_type='application/pdf',
+                headers={'Content-Disposition': 'inline; filename=relatorio_acessos.pdf'}
+            )
 
 
 estatisticas_controller = EstatisticasController()
