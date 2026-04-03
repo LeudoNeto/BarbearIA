@@ -26,6 +26,11 @@ class EmpresaController:
             """Atualiza os dados da empresa"""
             return self.facade.atualizar_empresa(dados)
 
+        @self.router.post('/desfazer-ultima-atualizacao')
+        async def desfazer_ultima_atualizacao_empresa():
+            """Desfaz a última atualização dos dados da empresa"""
+            return self.facade.desfazer_ultima_atualizacao_empresa()
+
 
 # Instância singleton
 empresa_controller = EmpresaController()

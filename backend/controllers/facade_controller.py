@@ -144,6 +144,14 @@ class FacadeSingletonController:
         """
         return self.empresa_manager.atualizar_empresa(dados)
 
+    def desfazer_ultima_atualizacao_empresa(self):
+        """
+        Desfaz a última atualização dos dados da empresa.
+
+        :return: dict com os dados restaurados da empresa
+        """
+        return self.empresa_manager.desfazer_ultima_atualizacao()
+
     # ==================== HORARIO FUNCIONAMENTO METHODS ====================
 
     def listar_horarios_funcionamento(self):
