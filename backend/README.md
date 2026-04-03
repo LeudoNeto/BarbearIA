@@ -605,6 +605,114 @@ GET /estatisticas
 
 > **Nota:** Retorna a quantidade total de entidades (linhas) em cada tabela do sistema.
 
+#### Obter Estatísticas de Acesso dos Usuários
+
+```http
+GET /estatisticas/acessos
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```json
+{
+  "total_logins": 8,
+  "usuarios_que_acessaram": [
+    {
+      "usuario_id": 1,
+      "tipo_usuario": "cliente",
+      "email": "cliente@barbearia.com",
+      "quantidade_acessos": 5,
+      "ultimo_acesso": "2026-03-28T14:30:00"
+    },
+    {
+      "usuario_id": 2,
+      "tipo_usuario": "funcionario",
+      "email": "funcionario@barbearia.com",
+      "quantidade_acessos": 3,
+      "ultimo_acesso": "2026-03-28T16:10:00"
+    }
+  ],
+  "ultimo_acesso_por_usuario": [
+    {
+      "usuario_id": 1,
+      "tipo_usuario": "cliente",
+      "email": "cliente@barbearia.com",
+      "ultimo_acesso": "2026-03-28T14:30:00"
+    },
+    {
+      "usuario_id": 2,
+      "tipo_usuario": "funcionario",
+      "email": "funcionario@barbearia.com",
+      "ultimo_acesso": "2026-03-28T16:10:00"
+    }
+  ],
+  "acessos_por_periodo": {
+    "dia": {
+      "2026-03-27": 3,
+      "2026-03-28": 5
+    },
+    "semana": {
+      "2026-W13": 8
+    },
+    "mes": {
+      "2026-03": 8
+    }
+  },
+  "acessos_por_tipo_usuario": {
+    "cliente": 5,
+    "funcionario": 3
+  }
+}
+```
+
+> **Nota:** Retorna estatísticas agregadas com base no histórico de logins bem-sucedidos registrados na tabela `acessos_usuario`.
+
+---
+
+#### Obter Relatório HTML de Acessos dos Usuários
+
+```http
+GET /estatisticas/acessos/relatorio-html
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatorio de Acessos</title>
+</head>
+<body>
+  <header>
+    <h1>Relatorio de Acessos dos Usuarios</h1>
+  </header>
+  <section>
+    <h2>Usuarios que acessaram</h2>
+  </section>
+</body>
+</html>
+```
+
+> **Nota:** Retorna o relatório de acessos em HTML renderizável no navegador, gerado com Template Method a partir das estatísticas consolidadas de login.
+
+---
+
+#### Obter Relatório PDF de Acessos dos Usuários
+
+```http
+GET /estatisticas/acessos/relatorio-pdf
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```text
+Conteúdo binário PDF retornado com Content-Type: application/pdf
+```
+
+> **Nota:** Retorna o relatório de acessos em PDF, gerado com a mesma estrutura de Template Method usada no relatório HTML.
+
 ---
 
 ## Modelos de Dados
