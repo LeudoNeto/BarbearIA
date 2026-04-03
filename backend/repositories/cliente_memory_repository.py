@@ -1,7 +1,8 @@
 from exceptions import DuplicateException
+from repositories.interfaces.cliente_repository_interface import ClienteRepositoryInterface
 
 
-class ClienteMemoryRepository:
+class ClienteMemoryRepository(ClienteRepositoryInterface):
     """Repositório em memória para operações de persistência de Cliente"""
     
     def __init__(self):

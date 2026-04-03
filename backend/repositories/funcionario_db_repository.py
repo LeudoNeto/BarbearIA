@@ -2,9 +2,10 @@ from models.funcionario import Funcionario
 from config.database import DBConnection
 from exceptions import DatabaseException, DuplicateException
 import pymysql
+from repositories.interfaces.funcionario_repository_interface import FuncionarioRepositoryInterface
 
 
-class FuncionarioDBRepository:
+class FuncionarioDBRepository(FuncionarioRepositoryInterface):
     """Repositório para operações de persistência de Funcionario em banco de dados"""
     
     def __init__(self):

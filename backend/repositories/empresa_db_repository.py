@@ -2,9 +2,10 @@ from models.empresa import Empresa
 from config.database import DBConnection
 from exceptions import DatabaseException, NotFoundException
 import pymysql
+from repositories.interfaces.empresa_repository_interface import EmpresaRepositoryInterface
 
 
-class EmpresaDBRepository:
+class EmpresaDBRepository(EmpresaRepositoryInterface):
     """Repositório para operações de persistência de Empresa em banco de dados"""
 
     def __init__(self):

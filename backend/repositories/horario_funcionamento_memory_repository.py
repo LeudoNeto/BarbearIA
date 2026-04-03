@@ -1,7 +1,8 @@
 from exceptions import DuplicateException, NotFoundException
+from repositories.interfaces.horario_funcionamento_repository_interface import HorarioFuncionamentoRepositoryInterface
 
 
-class HorarioFuncionamentoMemoryRepository:
+class HorarioFuncionamentoMemoryRepository(HorarioFuncionamentoRepositoryInterface):
     """Repositório em memória para operações de persistência de HorarioFuncionamento"""
 
     def __init__(self):
