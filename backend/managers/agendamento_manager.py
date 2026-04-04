@@ -175,6 +175,60 @@ class AgendamentoManager(Observable):
         
         return dados_resultado
     
+    def confirmar_agendamento(self, agendamento_id):
+        """
+        Confirma um agendamento
+        
+        :param agendamento_id: ID do agendamento
+        :return: dict com dados do agendamento atualizado
+        """
+        agendamento = self.agendamento_repository.buscar_por_id(agendamento_id)
+        if not agendamento:
+            raise NotFoundException("Agendamento não encontrado")
+        
+        agendamento.confirmar()
+        self.agendamento_repository.atualizar(agendamento)
+        
+        dados_resultado = agendamento.to_dict()
+        self.notify("agendamento_confirmado", dados_resultado)
+        return dados_resultado
+
+    def cancelar_agendamento(self, agendamento_id):
+        """
+        Cancela um agendamento
+        
+        :param agendamento_id: ID do agendamento
+        :return: dict com dados do agendamento atualizado
+        """
+        agendamento = self.agendamento_repository.buscar_por_id(agendamento_id)
+        if not agendamento:
+            raise NotFoundException("Agendamento não encontrado")
+        
+        agendamento.cancelar()
+        self.agendamento_repository.atualizar(agendamento)
+        
+        dados_resultado = agendamento.to_dict()
+        self.notify("agendamento_cancelado", dados_resultado)
+        return dados_resultado
+
+    def concluir_agendamento(self, agendamento_id):
+        """
+        Conclui um agendamento
+        
+        :param agendamento_id: ID do agendamento
+        :return: dict com dados do agendamento atualizado
+        """
+        agendamento = self.agendamento_repository.buscar_por_id(agendamento_id)
+        if not agendamento:
+            raise NotFoundException("Agendamento não encontrado")
+        
+        agendamento.concluir()
+        self.agendamento_repository.atualizar(agendamento)
+        
+        dados_resultado = agendamento.to_dict()
+        self.notify("agendamento_concluido", dados_resultado)
+        return dados_resultado
+
     def deletar_agendamento(self, agendamento_id):
         """
         Deleta um agendamento

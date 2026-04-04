@@ -238,6 +238,24 @@ class FacadeSingletonController:
         """
         return self.agendamento_manager.atualizar_agendamento(agendamento_id, dados)
 
+    def confirmar_agendamento(self, agendamento_id):
+        """
+        Confirma um agendamento.
+        """
+        return self.agendamento_manager.confirmar_agendamento(agendamento_id)
+
+    def cancelar_agendamento(self, agendamento_id):
+        """
+        Cancela um agendamento.
+        """
+        return self.agendamento_manager.cancelar_agendamento(agendamento_id)
+
+    def concluir_agendamento(self, agendamento_id):
+        """
+        Conclui um agendamento.
+        """
+        return self.agendamento_manager.concluir_agendamento(agendamento_id)
+
     def deletar_agendamento(self, agendamento_id):
         """
         Deleta um agendamento.

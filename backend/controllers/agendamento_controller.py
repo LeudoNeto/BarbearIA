@@ -62,6 +62,21 @@ class AgendamentoController:
             """
             return self.facade.atualizar_agendamento(agendamento_id, dados)
         
+        @self.router.patch('/{agendamento_id}/confirmar')
+        async def confirmar_agendamento(agendamento_id: int):
+            """Confirma o agendamento alterando seu estado"""
+            return self.facade.confirmar_agendamento(agendamento_id)
+
+        @self.router.patch('/{agendamento_id}/cancelar')
+        async def cancelar_agendamento(agendamento_id: int):
+            """Cancela o agendamento alterando seu estado"""
+            return self.facade.cancelar_agendamento(agendamento_id)
+
+        @self.router.patch('/{agendamento_id}/concluir')
+        async def concluir_agendamento(agendamento_id: int):
+            """Conclui o agendamento alterando seu estado"""
+            return self.facade.concluir_agendamento(agendamento_id)
+        
         @self.router.delete('/{agendamento_id}')
         async def deletar_agendamento(agendamento_id: int):
             """Deleta um agendamento"""

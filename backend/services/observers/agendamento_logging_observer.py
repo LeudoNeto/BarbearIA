@@ -12,3 +12,9 @@ class AgendamentoLoggingObserver(Observer):
             print(f"[LOG][Observer] Agendamento removido: ID {data.get('id')}")
         elif event_type == "agendamento_atualizado":
             print(f"[LOG][Observer] Agendamento atualizado: ID {data.get('id')}")
+        elif event_type == "agendamento_confirmado":
+            print(f"[LOG][Observer] Agendamento confirmado: ID {data.get('id')}")
+        elif event_type == "agendamento_cancelado":
+            print(f"[LOG][Observer] Agendamento cancelado: ID {data.get('id')}")
+        elif event_type == "agendamento_concluido":
+            print(f"[LOG][Observer] Agendamento concluído: ID {data.get('id')}")

@@ -13,4 +13,13 @@ class AgendamentoEmailObserver(Observer):
                   f"Seu agendamento para {inicio} foi criado com sucesso!")
         elif event_type == "agendamento_deletado":
             print(f"[EMAIL][Observer] Enviando aviso para Cliente ID {data.get('cliente_id')}: "
-                  f"Seu agendamento para {data.get('inicio')} foi cancelado.")
+                  f"Seu agendamento para {data.get('inicio')} foi apagado.")
+        elif event_type == "agendamento_confirmado":
+            print(f"[EMAIL][Observer] Enviando confirmação oficial para Cliente ID {data.get('cliente_id')}: "
+                  f"O barbeiro aprovou seu agendamento para {data.get('inicio')}.")
+        elif event_type == "agendamento_cancelado":
+            print(f"[EMAIL][Observer] Enviando aviso de cancelamento para Cliente ID {data.get('cliente_id')}: "
+                  f"Lamentamos, seu agendamento para {data.get('inicio')} foi cancelado.")
+        elif event_type == "agendamento_concluido":
+            print(f"[EMAIL][Observer] Enviando agradecimento para Cliente ID {data.get('cliente_id')}: "
+                  f"Obrigado por comparecer ao serviço no horário {data.get('inicio')}! Volte sempre.")
