@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS agendamentos (
     fim DATETIME NOT NULL,
     cliente_id INT NOT NULL,
     barbeiro_id INT NOT NULL,
+    status VARCHAR(20) DEFAULT 'Pendente',
     FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE,
     FOREIGN KEY (barbeiro_id) REFERENCES funcionarios(id) ON DELETE CASCADE,
     INDEX idx_cliente (cliente_id),

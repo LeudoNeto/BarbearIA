@@ -28,7 +28,7 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    SELECT id, inicio, fim, cliente_id, barbeiro_id 
+                    SELECT id, inicio, fim, cliente_id, barbeiro_id, status 
                     FROM agendamentos
                 """
                 cursor.execute(sql)
@@ -41,7 +41,8 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
                         inicio=row['inicio'],
                         fim=row['fim'],
                         cliente_id=row['cliente_id'],
-                        barbeiro_id=row['barbeiro_id']
+                        barbeiro_id=row['barbeiro_id'],
+                        status=row['status']
                     )
                     agendamentos.append(agendamento)
                 
@@ -62,7 +63,7 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    SELECT id, inicio, fim, cliente_id, barbeiro_id 
+                    SELECT id, inicio, fim, cliente_id, barbeiro_id, status 
                     FROM agendamentos
                     WHERE id = %s
                 """
@@ -77,7 +78,8 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
                     inicio=row['inicio'],
                     fim=row['fim'],
                     cliente_id=row['cliente_id'],
-                    barbeiro_id=row['barbeiro_id']
+                    barbeiro_id=row['barbeiro_id'],
+                    status=row['status']
                 )
         except pymysql.Error as e:
             raise DatabaseException(f"Erro ao buscar agendamento por ID: {str(e)}")
@@ -95,7 +97,7 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    SELECT id, inicio, fim, cliente_id, barbeiro_id 
+                    SELECT id, inicio, fim, cliente_id, barbeiro_id, status 
                     FROM agendamentos
                     WHERE cliente_id = %s
                 """
@@ -109,7 +111,8 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
                         inicio=row['inicio'],
                         fim=row['fim'],
                         cliente_id=row['cliente_id'],
-                        barbeiro_id=row['barbeiro_id']
+                        barbeiro_id=row['barbeiro_id'],
+                        status=row['status']
                     )
                     agendamentos.append(agendamento)
                 
@@ -130,7 +133,7 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    SELECT id, inicio, fim, cliente_id, barbeiro_id 
+                    SELECT id, inicio, fim, cliente_id, barbeiro_id, status 
                     FROM agendamentos
                     WHERE barbeiro_id = %s
                 """
@@ -144,7 +147,8 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
                         inicio=row['inicio'],
                         fim=row['fim'],
                         cliente_id=row['cliente_id'],
-                        barbeiro_id=row['barbeiro_id']
+                        barbeiro_id=row['barbeiro_id'],
+                        status=row['status']
                     )
                     agendamentos.append(agendamento)
                 
@@ -165,14 +169,15 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    INSERT INTO agendamentos (inicio, fim, cliente_id, barbeiro_id)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO agendamentos (inicio, fim, cliente_id, barbeiro_id, status)
+                    VALUES (%s, %s, %s, %s, %s)
                 """
                 cursor.execute(sql, (
                     agendamento.inicio,
                     agendamento.fim,
                     agendamento.cliente_id,
-                    agendamento.barbeiro_id
+                    agendamento.barbeiro_id,
+                    agendamento.status
                 ))
                 connection.commit()
                 return cursor.lastrowid
@@ -195,7 +200,7 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
             with connection.cursor() as cursor:
                 sql = """
                     UPDATE agendamentos
-                    SET inicio = %s, fim = %s, cliente_id = %s, barbeiro_id = %s
+                    SET inicio = %s, fim = %s, cliente_id = %s, barbeiro_id = %s, status = %s
                     WHERE id = %s
                 """
                 cursor.execute(sql, (
@@ -203,6 +208,7 @@ class AgendamentoDBRepository(AgendamentoRepositoryInterface):
                     agendamento.fim,
                     agendamento.cliente_id,
                     agendamento.barbeiro_id,
+                    agendamento.status,
                     agendamento.id
                 ))
                 connection.commit()

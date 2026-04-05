@@ -2,19 +2,27 @@ from models.agendamento import Agendamento
 from repositories.repository_factory import repository_factory
 from services.validacao_agendamento_service import ValidacaoAgendamentoService
 from exceptions import NotFoundException
+from services.observer import Observable
+from services.observers.agendamento_logging_observer import AgendamentoLoggingObserver
+from services.observers.agendamento_email_observer import AgendamentoEmailObserver
 
 
-class AgendamentoManager:
+class AgendamentoManager(Observable):
     """Manager para orquestrar operações de Agendamento"""
     
     def __init__(self):
         """
         Inicializa o manager
         """
+        super().__init__()
         self.agendamento_repository = repository_factory.get_agendamento_repository()
         self.cliente_repository = repository_factory.get_cliente_repository()
         self.funcionario_repository = repository_factory.get_funcionario_repository()
         self.validacao_service = ValidacaoAgendamentoService()
+
+        # Anexa observadores padrão
+        self.attach(AgendamentoLoggingObserver())
+        self.attach(AgendamentoEmailObserver())
     
     def listar_agendamentos(self):
         """
@@ -101,7 +109,12 @@ class AgendamentoManager:
         agendamento_id = self.agendamento_repository.criar(agendamento)
         agendamento.id = agendamento_id
         
-        return agendamento.to_dict()
+        dados_resultado = agendamento.to_dict()
+        
+        # Notifica observadores
+        self.notify("agendamento_criado", dados_resultado)
+        
+        return dados_resultado
     
     def atualizar_agendamento(self, agendamento_id, dados):
         """
@@ -155,8 +168,67 @@ class AgendamentoManager:
         
         self.agendamento_repository.atualizar(agendamento)
         
-        return agendamento.to_dict()
+        dados_resultado = agendamento.to_dict()
+
+        # Notifica observadores
+        self.notify("agendamento_atualizado", dados_resultado)
+        
+        return dados_resultado
     
+    def confirmar_agendamento(self, agendamento_id):
+        """
+        Confirma um agendamento
+        
+        :param agendamento_id: ID do agendamento
+        :return: dict com dados do agendamento atualizado
+        """
+        agendamento = self.agendamento_repository.buscar_por_id(agendamento_id)
+        if not agendamento:
+            raise NotFoundException("Agendamento não encontrado")
+        
+        agendamento.confirmar()
+        self.agendamento_repository.atualizar(agendamento)
+        
+        dados_resultado = agendamento.to_dict()
+        self.notify("agendamento_confirmado", dados_resultado)
+        return dados_resultado
+
+    def cancelar_agendamento(self, agendamento_id):
+        """
+        Cancela um agendamento
+        
+        :param agendamento_id: ID do agendamento
+        :return: dict com dados do agendamento atualizado
+        """
+        agendamento = self.agendamento_repository.buscar_por_id(agendamento_id)
+        if not agendamento:
+            raise NotFoundException("Agendamento não encontrado")
+        
+        agendamento.cancelar()
+        self.agendamento_repository.atualizar(agendamento)
+        
+        dados_resultado = agendamento.to_dict()
+        self.notify("agendamento_cancelado", dados_resultado)
+        return dados_resultado
+
+    def concluir_agendamento(self, agendamento_id):
+        """
+        Conclui um agendamento
+        
+        :param agendamento_id: ID do agendamento
+        :return: dict com dados do agendamento atualizado
+        """
+        agendamento = self.agendamento_repository.buscar_por_id(agendamento_id)
+        if not agendamento:
+            raise NotFoundException("Agendamento não encontrado")
+        
+        agendamento.concluir()
+        self.agendamento_repository.atualizar(agendamento)
+        
+        dados_resultado = agendamento.to_dict()
+        self.notify("agendamento_concluido", dados_resultado)
+        return dados_resultado
+
     def deletar_agendamento(self, agendamento_id):
         """
         Deleta um agendamento
@@ -164,7 +236,17 @@ class AgendamentoManager:
         :param agendamento_id: ID do agendamento
         :return: bool indicando sucesso
         """
-        return self.agendamento_repository.deletar(agendamento_id)
+        agendamento = self.agendamento_repository.buscar_por_id(agendamento_id)
+        if not agendamento:
+            return False
+            
+        dados_agendamento = agendamento.to_dict()
+        sucesso = self.agendamento_repository.deletar(agendamento_id)
+        
+        if sucesso:
+            self.notify("agendamento_deletado", dados_agendamento)
+            
+        return sucesso
     
     def contar_agendamentos(self):
         """
