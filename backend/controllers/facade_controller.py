@@ -1,7 +1,8 @@
 """
-FacadeSingletonController - Facade Pattern para centralizar chamadas aos managers.
-Este controller atua como uma interface unica entre os controllers e os managers,
-seguindo o padrao Facade e Singleton.
+FacadeSingletonController - Facade + Singleton refatorado para usar o padrão Command.
+
+Cada método agora instancia o Command correspondente e delega
+a execução ao CommandInvoker, eliminando chamadas diretas aos managers.
 """
 
 from managers.agendamento_manager import agendamento_manager
@@ -14,175 +15,187 @@ from managers.horario_funcionamento_manager import horario_funcionamento_manager
 from managers.preview_corte_manager import preview_corte_manager
 from managers.relatorio_acesso_manager import relatorio_acesso_manager
 
+from commands import (
+    command_invoker,
+    # Auth
+    LoginCommand, SignupCommand, ObterUsuarioLogadoCommand, LogoutCommand,
+    # Cliente
+    ListarClientesCommand, CriarClienteCommand, ContarClientesCommand,
+    # Funcionário
+    ListarFuncionariosCommand, CriarFuncionarioCommand, ContarFuncionariosCommand,
+    # Empresa
+    BuscarEmpresaCommand, AtualizarEmpresaCommand, DesfazerAtualizacaoEmpresaCommand,
+    # Horário
+    ListarHorariosCommand, CriarHorarioCommand, AtualizarHorarioCommand, DeletarHorarioCommand,
+    # Agendamento
+    ListarAgendamentosCommand, BuscarAgendamentoPorIdCommand,
+    BuscarAgendamentosPorClienteCommand, BuscarAgendamentosPorBarbeiroCommand,
+    CriarAgendamentoCommand, AtualizarAgendamentoCommand,
+    DeletarAgendamentoCommand, ContarAgendamentosCommand,
+    # Estatísticas
+    ObterEstatisticasSistemaCommand, ObterEstatisticasAcessoCommand,
+    GerarRelatorioAcessosHtmlCommand, GerarRelatorioAcessosPdfCommand,
+    # Preview
+    GerarPreviewCorteCommand,
+)
+
 
 class FacadeSingletonController:
     """
-    Facade Singleton Controller - Interface unica para acesso aos managers.
-
-    Este controller centraliza todas as chamadas aos managers, fornecendo
-    uma camada de abstracao entre os controllers de rotas e a logica de negocios.
+    Facade Singleton Controller — agora delega todas as operações
+    ao CommandInvoker via objetos Command, mantendo baixo acoplamento
+    e permitindo extensão sem modificação desta classe.
     """
 
     _instance = None
     _initialized = False
 
     def __new__(cls):
-        """Implementacao do padrao Singleton para garantir instancia unica."""
         if cls._instance is None:
-            cls._instance = super(FacadeSingletonController, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self):
-        """Inicializa o facade com referencias a todos os managers apenas uma vez."""
         if FacadeSingletonController._initialized:
             return
 
-        self.auth_manager = auth_manager
-        self.cliente_manager = cliente_manager
-        self.funcionario_manager = funcionario_manager
-        self.empresa_manager = empresa_manager
-        self.horario_funcionamento_manager = horario_funcionamento_manager
-        self.agendamento_manager = agendamento_manager
-        self.estatisticas_acesso_manager = estatisticas_acesso_manager
-        self.preview_corte_manager = preview_corte_manager
-        self.relatorio_acesso_manager = relatorio_acesso_manager
+        # Referências aos managers (apenas para passagem aos Commands)
+        self._auth_manager = auth_manager
+        self._cliente_manager = cliente_manager
+        self._funcionario_manager = funcionario_manager
+        self._empresa_manager = empresa_manager
+        self._horario_manager = horario_funcionamento_manager
+        self._agendamento_manager = agendamento_manager
+        self._estatisticas_acesso_manager = estatisticas_acesso_manager
+        self._preview_corte_manager = preview_corte_manager
+        self._relatorio_acesso_manager = relatorio_acesso_manager
+
+        # Invoker compartilhado
+        self._invoker = command_invoker
 
         FacadeSingletonController._initialized = True
 
-    # ==================== AUTH METHODS ====================
+    # ==================== AUTH ====================
 
-    def login(self, dados):
-        """
-        Realiza login de usuario.
+    def login(self, dados: dict):
+        return self._invoker.executar(
+            LoginCommand(self._auth_manager, dados)
+        )
 
-        :param dados: dict com email e senha
-        :return: tuple (dict com dados do usuario, session_id)
-        """
-        return self.auth_manager.login(dados)
+    def signup(self, dados: dict):
+        return self._invoker.executar(
+            SignupCommand(self._auth_manager, dados)
+        )
 
-    def signup(self, dados):
-        """
-        Registra um novo cliente.
+    def obter_usuario_logado(self, session_id: str):
+        return self._invoker.executar(
+            ObterUsuarioLogadoCommand(self._auth_manager, session_id)
+        )
 
-        :param dados: dict com dados do cliente
-        :return: dict com dados do cliente criado
-        """
-        return self.auth_manager.signup(dados)
+    def logout(self, session_id: str):
+        return self._invoker.executar(
+            LogoutCommand(self._auth_manager, session_id)
+        )
 
-    def obter_usuario_logado(self, session_id):
-        """
-        Obtem dados do usuario logado.
-
-        :param session_id: ID da sessao
-        :return: dict com dados do usuario ou None
-        """
-        return self.auth_manager.obter_usuario_logado(session_id)
-
-    def logout(self, session_id):
-        """
-        Realiza logout do usuario.
-
-        :param session_id: ID da sessao
-        :return: bool indicando sucesso
-        """
-        return self.auth_manager.logout(session_id)
-
-    # ==================== CLIENTE METHODS ====================
+    # ==================== CLIENTE ====================
 
     def listar_clientes(self):
-        """
-        Lista todos os clientes.
+        return self._invoker.executar(
+            ListarClientesCommand(self._cliente_manager)
+        )
 
-        :return: lista de dicts com dados dos clientes
-        """
-        return self.cliente_manager.listar_clientes()
+    def criar_cliente(self, dados: dict):
+        return self._invoker.executar(
+            CriarClienteCommand(self._cliente_manager, dados)
+        )
 
-    def criar_cliente(self, dados):
-        """
-        Cria um novo cliente.
-
-        :param dados: dict com dados do cliente
-        :return: dict com dados do cliente criado
-        """
-        return self.cliente_manager.criar_cliente(dados)
-
-    # ==================== FUNCIONARIO METHODS ====================
+    # ==================== FUNCIONARIO ====================
 
     def listar_funcionarios(self):
-        """
-        Lista todos os funcionarios.
+        return self._invoker.executar(
+            ListarFuncionariosCommand(self._funcionario_manager)
+        )
 
-        :return: lista de dicts com dados dos funcionarios
-        """
-        return self.funcionario_manager.listar_funcionarios()
+    def criar_funcionario(self, dados: dict):
+        return self._invoker.executar(
+            CriarFuncionarioCommand(self._funcionario_manager, dados)
+        )
 
-    def criar_funcionario(self, dados):
-        """
-        Cria um novo funcionario.
-
-        :param dados: dict com dados do funcionario
-        :return: dict com dados do funcionario criado
-        """
-        return self.funcionario_manager.criar_funcionario(dados)
-
-    # ==================== EMPRESA METHODS ====================
+    # ==================== EMPRESA ====================
 
     def buscar_empresa(self):
-        """
-        Obtem os dados da empresa.
+        return self._invoker.executar(
+            BuscarEmpresaCommand(self._empresa_manager)
+        )
 
-        :return: dict com dados da empresa ou None
-        """
-        return self.empresa_manager.buscar_empresa()
+    def atualizar_empresa(self, dados: dict):
+        return self._invoker.executar(
+            AtualizarEmpresaCommand(self._empresa_manager, dados)
+        )
 
-    def atualizar_empresa(self, dados):
-        """
-        Atualiza os dados da empresa.
+    def desfazer_ultima_atualizacao_empresa(self):
+        return self._invoker.executar(
+            DesfazerAtualizacaoEmpresaCommand(self._empresa_manager)
+        )
 
-        :param dados: dict com dados a atualizar
-        :return: dict com dados da empresa atualizada
-        """
-        return self.empresa_manager.atualizar_empresa(dados)
-
-    # ==================== HORARIO FUNCIONAMENTO METHODS ====================
+    # ==================== HORARIO FUNCIONAMENTO ====================
 
     def listar_horarios_funcionamento(self):
-        """
-        Lista todos os horarios de funcionamento.
+        return self._invoker.executar(
+            ListarHorariosCommand(self._horario_manager)
+        )
 
-        :return: lista de dicts com dados dos horarios
-        """
-        return self.horario_funcionamento_manager.listar_horarios()
+    def criar_horario_funcionamento(self, dados: dict):
+        return self._invoker.executar(
+            CriarHorarioCommand(self._horario_manager, dados)
+        )
 
-    def criar_horario_funcionamento(self, dados):
-        """
-        Cria um novo horario de funcionamento.
+    def atualizar_horario_funcionamento(self, horario_id: int, dados: dict):
+        return self._invoker.executar(
+            AtualizarHorarioCommand(self._horario_manager, horario_id, dados)
+        )
 
-        :param dados: dict com dados do horario
-        :return: dict com dados do horario criado
-        """
-        return self.horario_funcionamento_manager.criar_horario(dados)
+    def deletar_horario_funcionamento(self, horario_id: int):
+        return self._invoker.executar(
+            DeletarHorarioCommand(self._horario_manager, horario_id)
+        )
 
-    def atualizar_horario_funcionamento(self, id, dados):
-        """
-        Atualiza um horario de funcionamento.
+    # ==================== AGENDAMENTO ====================
 
-        :param id: ID do horario
-        :param dados: dict com dados a atualizar
-        :return: dict com dados do horario atualizado
-        """
-        return self.horario_funcionamento_manager.atualizar_horario(id, dados)
+    def listar_agendamentos(self):
+        return self._invoker.executar(
+            ListarAgendamentosCommand(self._agendamento_manager)
+        )
 
-    def deletar_horario_funcionamento(self, id):
-        """
-        Deleta um horario de funcionamento.
+    def buscar_agendamento_por_id(self, agendamento_id: int):
+        return self._invoker.executar(
+            BuscarAgendamentoPorIdCommand(self._agendamento_manager, agendamento_id)
+        )
 
-        :param id: ID do horario
-        :return: bool indicando sucesso
-        """
-        return self.horario_funcionamento_manager.deletar_horario(id)
+    def buscar_agendamentos_por_cliente(self, cliente_id: int):
+        return self._invoker.executar(
+            BuscarAgendamentosPorClienteCommand(self._agendamento_manager, cliente_id)
+        )
 
-    # ==================== AGENDAMENTO METHODS ====================
+    def buscar_agendamentos_por_barbeiro(self, barbeiro_id: int):
+        return self._invoker.executar(
+            BuscarAgendamentosPorBarbeiroCommand(self._agendamento_manager, barbeiro_id)
+        )
+
+    def criar_agendamento(self, dados: dict):
+        return self._invoker.executar(
+            CriarAgendamentoCommand(self._agendamento_manager, dados)
+        )
+
+    def atualizar_agendamento(self, agendamento_id: int, dados: dict):
+        return self._invoker.executar(
+            AtualizarAgendamentoCommand(self._agendamento_manager, agendamento_id, dados)
+        )
+
+    def deletar_agendamento(self, agendamento_id: int):
+        return self._invoker.executar(
+            DeletarAgendamentoCommand(self._agendamento_manager, agendamento_id)
+        )
 
     def listar_agendamentos(self):
         """
@@ -265,60 +278,54 @@ class FacadeSingletonController:
         """
         return self.agendamento_manager.deletar_agendamento(agendamento_id)
 
-    # ==================== ESTATISTICAS METHODS ====================
+    # ==================== ESTATISTICAS ====================
 
     def obter_estatisticas_sistema(self):
-        """
-        Obtem estatisticas gerais do sistema (contagem de todas as entidades).
-
-        :return: dict com contagens de todas as entidades
-        """
-        return {
-            'clientes': self.cliente_manager.contar_clientes(),
-            'funcionarios': self.funcionario_manager.contar_funcionarios(),
-            'agendamentos': self.agendamento_manager.contar_agendamentos()
-        }
+        return self._invoker.executar(
+            ObterEstatisticasSistemaCommand(
+                self._cliente_manager,
+                self._funcionario_manager,
+                self._agendamento_manager,
+            )
+        )
 
     def obter_estatisticas_acesso(self):
-        """
-        Obtem estatisticas agregadas de acesso dos usuarios.
-
-        :return: dict com dados consolidados dos acessos
-        """
-        return self.estatisticas_acesso_manager.obter_estatisticas_acesso()
+        return self._invoker.executar(
+            ObterEstatisticasAcessoCommand(self._estatisticas_acesso_manager)
+        )
 
     def gerar_relatorio_acessos_html(self):
-        """
-        Gera o relatorio de acessos em HTML.
-
-        :return: string HTML com o relatorio consolidado
-        """
-        return self.relatorio_acesso_manager.gerar_relatorio_acessos_html()
+        return self._invoker.executar(
+            GerarRelatorioAcessosHtmlCommand(self._relatorio_acesso_manager)
+        )
 
     def gerar_relatorio_acessos_pdf(self):
-        """
-        Gera o relatorio de acessos em PDF.
-
-        :return: bytes do PDF com o relatorio consolidado
-        """
-        return self.relatorio_acesso_manager.gerar_relatorio_acessos_pdf()
-
-    # ==================== PREVIEW CORTE METHODS ====================
-
-    def gerar_preview_corte(self, imagem_pessoa_bytes: bytes, imagem_corte_bytes: bytes, usar_mock: bool = False):
-        """
-        Gera preview de corte com IA.
-
-        :param imagem_pessoa_bytes: bytes da imagem da pessoa
-        :param imagem_corte_bytes: bytes da imagem de referencia do corte
-        :param usar_mock: forca strategy mockada para testes
-        :return: dict com caminho do preview e strategy utilizada
-        """
-        return self.preview_corte_manager.gerar_preview_corte(
-            imagem_pessoa_bytes=imagem_pessoa_bytes,
-            imagem_corte_bytes=imagem_corte_bytes,
-            usar_mock=usar_mock
+        return self._invoker.executar(
+            GerarRelatorioAcessosPdfCommand(self._relatorio_acesso_manager)
         )
+
+    # ==================== PREVIEW CORTE ====================
+
+    def gerar_preview_corte(
+        self,
+        imagem_pessoa_bytes: bytes,
+        imagem_corte_bytes: bytes,
+        usar_mock: bool = False,
+    ):
+        return self._invoker.executar(
+            GerarPreviewCorteCommand(
+                self._preview_corte_manager,
+                imagem_pessoa_bytes,
+                imagem_corte_bytes,
+                usar_mock,
+            )
+        )
+
+    # ==================== UTILITÁRIOS ====================
+
+    def obter_historico_comandos(self) -> list[dict]:
+        """Expõe o histórico de execuções de comandos para auditoria."""
+        return self._invoker.obter_historico()
 
 
 facade_controller = FacadeSingletonController()
