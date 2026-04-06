@@ -13,6 +13,7 @@ API REST para gerenciamento de barbearia desenvolvida com FastAPI.
   - [Horários de Funcionamento](#horários-de-funcionamento)
   - [Agendamentos](#agendamentos)
   - [Estatísticas](#estatísticas)
+  - [Preview de Corte](#preview-de-corte)
 - [Modelos de Dados](#modelos-de-dados)
 - [Respostas de Erro](#respostas-de-erro)
 
@@ -315,6 +316,26 @@ PUT /empresa
 
 > **Nota:** Só existe uma empresa por sistema. Se não existir, será criada. Se já existir, será atualizada.
 
+#### Desfazer Última Atualização da Empresa
+
+```http
+POST /empresa/desfazer-ultima-atualizacao
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```json
+{
+  "id": 1,
+  "nome": "Barbearia Imperial",
+  "endereco": "Rua Principal, 123",
+  "telefone": "84999887766",
+  "email": "contato@barbeariaimperial.com"
+}
+```
+
+> **Nota:** Reverte os dados da empresa para o estado imediatamente anterior, quando houver histórico disponível.
+
 ---
 
 ### Horários de Funcionamento
@@ -569,6 +590,63 @@ PUT /agendamentos/{agendamento_id}
 }
 ```
 
+#### Confirmar Agendamento
+
+```http
+PATCH /agendamentos/{agendamento_id}/confirmar
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```json
+{
+  "id": 3,
+  "inicio": "2026-03-01T15:00:00",
+  "fim": "2026-03-01T16:00:00",
+  "cliente_id": 1,
+  "barbeiro_id": 2,
+  "status": "Confirmado"
+}
+```
+
+#### Cancelar Agendamento
+
+```http
+PATCH /agendamentos/{agendamento_id}/cancelar
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```json
+{
+  "id": 3,
+  "inicio": "2026-03-01T15:00:00",
+  "fim": "2026-03-01T16:00:00",
+  "cliente_id": 1,
+  "barbeiro_id": 2,
+  "status": "Cancelado"
+}
+```
+
+#### Concluir Agendamento
+
+```http
+PATCH /agendamentos/{agendamento_id}/concluir
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```json
+{
+  "id": 3,
+  "inicio": "2026-03-01T15:00:00",
+  "fim": "2026-03-01T16:00:00",
+  "cliente_id": 1,
+  "barbeiro_id": 2,
+  "status": "Concluído"
+}
+```
+
 #### Deletar Agendamento
 
 ```http
@@ -712,6 +790,44 @@ Conteúdo binário PDF retornado com Content-Type: application/pdf
 ```
 
 > **Nota:** Retorna o relatório de acessos em PDF, gerado com a mesma estrutura de Template Method usada no relatório HTML.
+
+---
+
+### Preview de Corte
+
+#### Gerar Preview de Corte
+
+```http
+POST /preview-corte
+```
+
+**Corpo da Requisição:**
+
+`multipart/form-data` com os campos:
+
+- `imagem_pessoa`: arquivo obrigatório (foto da pessoa)
+- `imagem_corte`: arquivo obrigatório (foto de referência do corte)
+- `usar_mock`: boolean opcional (padrão `false`)
+
+**Exemplo de Requisição (cURL):**
+
+```bash
+curl -X POST http://localhost:8000/preview-corte \
+  -F "imagem_pessoa=@./pessoa.jpg" \
+  -F "imagem_corte=@./corte.jpg" \
+  -F "usar_mock=false"
+```
+
+**Exemplo de Resposta (200 OK):**
+
+```json
+{
+  "preview_path": "/static/previews/preview_123.png",
+  "strategy": "mock"
+}
+```
+
+> **Nota:** A estrutura exata da resposta pode variar de acordo com a strategy de preview configurada.
 
 ---
 
