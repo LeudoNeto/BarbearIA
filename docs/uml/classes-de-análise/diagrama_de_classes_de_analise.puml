@@ -1,4 +1,4 @@
-@startuml Sistema de Agendamento - Diagrama de Classes
+﻿@startuml Sistema de Agendamento - Diagrama de Classes
 
 skinparam classAttributeIconSize 0
 skinparam classFontSize 12
@@ -11,11 +11,9 @@ package "MODELS" #LightYellow {
     class Cliente {}
     class Funcionario {}
     class Empresa {}
-    class Agendamento {
-        cliente_id
-        barbeiro_id
-    }
+    class Agendamento {}
     class HorarioFuncionamento {}
+    class AcessoUsuario {}
 }
 
 ' ==================== MANAGERS ====================
@@ -24,13 +22,16 @@ package "MANAGERS" #LightBlue {
     class ClienteManager {}
     class FuncionarioManager {}
     class EmpresaManager {}
-    class AgendamentoManager {}
     class HorarioFuncionamentoManager {}
+    class EstatisticasAcessoManager {}
+    class RelatorioAcessoManager {}
+    class PreviewCorteManager {}
+    class AgendamentoManager <<Observable>> {}
 }
 
-' ==================== CONTROLLERS ====================
+' ==================== CONTROLLERS (FACADE) ====================
 package "CONTROLLERS" #LightGreen {
-    class FacadeSingletonController {}
+    class FacadeSingletonController <<Facade>> {}
     class AuthController {}
     class ClienteController {}
     class FuncionarioController {}
@@ -38,6 +39,91 @@ package "CONTROLLERS" #LightGreen {
     class AgendamentoController {}
     class HorarioFuncionamentoController {}
     class EstatisticasController {}
+    class PreviewCorteController {}
+}
+
+' ==================== COMMAND PATTERN ====================
+package "COMMANDS" <<Pattern: Command>> #LightSteelBlue {
+    note as N_Command
+        **Padrão:** Command
+        **Objetivo:** Encapsular requisições da Facade como objetos independentes,
+        delegando a execução ao CommandInvoker para reduzir o acoplamento.
+        **Classes:** CommandInvoker, BaseCommand e [Entidade]Commands.
+    end note
+    class CommandInvoker {}
+    abstract class BaseCommand {}
+    class AgendamentoCommands <<Command Group>>
+    class ClienteCommands <<Command Group>>
+    class FuncionarioCommands <<Command Group>>
+    class AuthCommands <<Command Group>>
+    class EmpresaCommands <<Command Group>>
+    class EstatisticasCommands <<Command Group>>
+    class HorarioFuncionamentoCommands <<Command Group>>
+    class PreviewCorteCommands <<Command Group>>
+}
+
+' ==================== TEMPLATE METHOD PATTERN ====================
+package "REPORTS" <<Pattern: Template Method>> #MistyRose {
+    note as N_Template
+        **Padrão:** Template Method
+        **Objetivo:** Definir o esqueleto do algoritmo de geração de relatórios,
+        delegando às subclasses apenas a formatação final do documento.
+        **Classes:** RelatorioAcessosTemplate, RelatorioAcessosHTML, RelatorioAcessosPDF.
+    end note
+    abstract class RelatorioAcessosTemplate {}
+    class RelatorioAcessosHTML
+    class RelatorioAcessosPDF
+}
+
+' ==================== STRATEGY PATTERN ====================
+package "PREVIEW STRATEGIES" <<Pattern: Strategy>> #PaleGreen {
+    note as N_Strategy
+        **Padrão:** Strategy
+        **Objetivo:** Permitir a troca dinâmica do gerador de previews (Mock
+        vs Integração API Real OpenAI) sem interferir no componente cliente.
+        **Classes:** PreviewCorteStrategy, MockPreviewCorteStrategy, etc.
+    end note
+    interface PreviewCorteStrategy {}
+    class MockPreviewCorteStrategy
+    class OpenAIPreviewCorteStrategy
+}
+
+' ==================== ADAPTER PATTERN ====================
+package "EXTERNAL ADAPTERS" <<Pattern: Adapter>> #SandyBrown {
+    note as N_Adapter
+        **Padrão:** Adapter
+        **Objetivo:** Adaptar e padronizar o consumo da biblioteca externa (OpenAI)
+        protegendo as regras de negócio de mudanças na API do fornecedor.
+        **Classes:** OpenAIImageAdapter.
+    end note
+    class OpenAIImageAdapter {}
+}
+
+' ==================== OBSERVER PATTERN ====================
+package "OBSERVER" <<Pattern: Observer>> #Plum {
+    note as N_Observer
+        **Padrão:** Observer
+        **Objetivo:** Notificar instâncias observadoras a cada novo
+        evento no Observable (Ex: Email/Log criados no Agendamento).
+        **Classes:** Observer, Observable, Observers Concretos.
+    end note
+    interface Observer {}
+    class Observable {}
+    class AgendamentoLoggingObserver
+    class AgendamentoEmailObserver
+}
+
+' ==================== MEMENTO PATTERN ====================
+package "MEMENTO" <<Pattern: Memento>> #Wheat {
+    note as N_Memento
+        **Padrão:** Memento
+        **Objetivo:** Armazenar snapshots do estado isolado da Empresa,
+        habilitando a reversão de fluxo (Undo) encapsulada e confiável.
+        **Classes:** EmpresaMemento, EmpresaOriginator, EmpresaCaretaker.
+    end note
+    class EmpresaMemento
+    class EmpresaOriginator
+    class EmpresaCaretaker
 }
 
 ' ==================== SERVICES ====================
@@ -49,8 +135,24 @@ package "SERVICES" #LightCoral {
     class ValidacaoHorarioService {}
 }
 
+' ==================== REPOSITORY INTERFACES ====================
+package "REPOSITORY INTERFACES" <<Pattern: Repository/Abstract Factory>> #LightCyan {
+    note as N_Repository
+        **Padrão:** Repository / Abstract Factory
+        **Objetivo:** Fornecer interfaces de acesso a dados. O Factory abstrai
+        qual db instanciar (Database ou Memória) para os Managers operarem.
+        **Classes:** RepositoryFactory e I[Entity]Repository.
+    end note
+    interface IClienteRepository
+    interface IFuncionarioRepository
+    interface IEmpresaRepository
+    interface IAgendamentoRepository
+    interface IHorarioFuncionamentoRepository
+    interface IAcessoUsuarioRepository
+}
+
 ' ==================== REPOSITORIES ====================
-package "REPOSITORIES" #Plum {
+package "REPOSITORIES" #Thistle {
     class RepositoryFactory {}
     class ClienteDBRepository {}
     class ClienteMemoryRepository {}
@@ -62,6 +164,8 @@ package "REPOSITORIES" #Plum {
     class AgendamentoMemoryRepository {}
     class HorarioFuncionamentoDBRepository {}
     class HorarioFuncionamentoMemoryRepository {}
+    class AcessoUsuarioDBRepository {}
+    class AcessoUsuarioMemoryRepository {}
 }
 
 ' ==================== EXCEPTIONS ====================
@@ -80,9 +184,40 @@ package "CONFIGURAÇÃO" #WhiteSmoke {
     class PersistenceConfig {}
 }
 
-' ==================== HERANÇA ====================
+' ==================== HERANÇA E IMPLEMENTAÇÕES ====================
 Usuario <|-- Cliente
 Usuario <|-- Funcionario
+Observable <|-- AgendamentoManager
+Observer <|.. AgendamentoLoggingObserver
+Observer <|.. AgendamentoEmailObserver
+
+BaseCommand <|-- AgendamentoCommands
+BaseCommand <|-- ClienteCommands
+BaseCommand <|-- FuncionarioCommands
+BaseCommand <|-- AuthCommands
+BaseCommand <|-- EmpresaCommands
+BaseCommand <|-- EstatisticasCommands
+BaseCommand <|-- HorarioFuncionamentoCommands
+BaseCommand <|-- PreviewCorteCommands
+
+RelatorioAcessosTemplate <|-- RelatorioAcessosHTML
+RelatorioAcessosTemplate <|-- RelatorioAcessosPDF
+
+PreviewCorteStrategy <|.. MockPreviewCorteStrategy
+PreviewCorteStrategy <|.. OpenAIPreviewCorteStrategy
+
+IClienteRepository <|.. ClienteDBRepository
+IClienteRepository <|.. ClienteMemoryRepository
+IFuncionarioRepository <|.. FuncionarioDBRepository
+IFuncionarioRepository <|.. FuncionarioMemoryRepository
+IEmpresaRepository <|.. EmpresaDBRepository
+IEmpresaRepository <|.. EmpresaMemoryRepository
+IAgendamentoRepository <|.. AgendamentoDBRepository
+IAgendamentoRepository <|.. AgendamentoMemoryRepository
+IHorarioFuncionamentoRepository <|.. HorarioFuncionamentoDBRepository
+IHorarioFuncionamentoRepository <|.. HorarioFuncionamentoMemoryRepository
+IAcessoUsuarioRepository <|.. AcessoUsuarioDBRepository
+IAcessoUsuarioRepository <|.. AcessoUsuarioMemoryRepository
 
 HTTPException <|-- ValidationException
 HTTPException <|-- DatabaseException
@@ -91,51 +226,18 @@ HTTPException <|-- DuplicateException
 HTTPException <|-- NotFoundException
 HTTPException <|-- UnauthorizedException
 
-' ==================== COMPOSIÇÃO ====================
+' ==================== COMPOSIÇÃO & AGREGAÇÃO ====================
 Agendamento *-- Cliente
 Agendamento *-- Funcionario
+CommandInvoker o-- BaseCommand
+EmpresaCaretaker o-- EmpresaMemento
 
-' ==================== ASSOCIAÇÕES - AuthManager ====================
-AuthManager --> ClienteManager
-AuthManager --> RepositoryFactory
-AuthManager --> SenhaService
-AuthManager --> SessionService
+' ==================== CRUZAMENTO ENTRE PACOTES ====================
+' FACADE --> COMMANDS
+FacadeSingletonController --> CommandInvoker
+FacadeSingletonController ..> BaseCommand : Instancia
 
-' ==================== ASSOCIAÇÕES - ClienteManager ====================
-ClienteManager --> Cliente
-ClienteManager --> RepositoryFactory
-ClienteManager --> SenhaService
-ClienteManager --> ValidacaoUsuarioService
-
-' ==================== ASSOCIAÇÕES - FuncionarioManager ====================
-FuncionarioManager --> Funcionario
-FuncionarioManager --> RepositoryFactory
-FuncionarioManager --> SenhaService
-FuncionarioManager --> ValidacaoUsuarioService
-
-' ==================== ASSOCIAÇÕES - EmpresaManager ====================
-EmpresaManager --> RepositoryFactory
-EmpresaManager --> ValidacaoUsuarioService
-
-' ==================== ASSOCIAÇÕES - AgendamentoManager ====================
-AgendamentoManager --> Agendamento
-AgendamentoManager --> RepositoryFactory
-AgendamentoManager --> ValidacaoAgendamentoService
-
-' ==================== ASSOCIAÇÕES - HorarioFuncionamentoManager ====================
-HorarioFuncionamentoManager --> HorarioFuncionamento
-HorarioFuncionamentoManager --> ValidacaoHorarioService
-HorarioFuncionamentoManager --> RepositoryFactory
-
-' ==================== ASSOCIAÇÕES - FacadeSingletonController ====================
-FacadeSingletonController --> AuthManager
-FacadeSingletonController --> ClienteManager
-FacadeSingletonController --> FuncionarioManager
-FacadeSingletonController --> EmpresaManager
-FacadeSingletonController --> AgendamentoManager
-FacadeSingletonController --> HorarioFuncionamentoManager
-
-' ==================== CONTROLLERS → FACADE ====================
+' CONTROLLERS --> FACADE
 AuthController --> FacadeSingletonController
 ClienteController --> FacadeSingletonController
 FuncionarioController --> FacadeSingletonController
@@ -143,33 +245,87 @@ EmpresaController --> FacadeSingletonController
 AgendamentoController --> FacadeSingletonController
 HorarioFuncionamentoController --> FacadeSingletonController
 EstatisticasController --> FacadeSingletonController
+PreviewCorteController --> FacadeSingletonController
 
-' ==================== REPOSITORY FACTORY (tracejado) ====================
-RepositoryFactory ..> ClienteDBRepository
-RepositoryFactory ..> ClienteMemoryRepository
-RepositoryFactory ..> FuncionarioDBRepository
-RepositoryFactory ..> FuncionarioMemoryRepository
-RepositoryFactory ..> EmpresaDBRepository
-RepositoryFactory ..> EmpresaMemoryRepository
-RepositoryFactory ..> AgendamentoDBRepository
-RepositoryFactory ..> AgendamentoMemoryRepository
-RepositoryFactory ..> HorarioFuncionamentoDBRepository
-RepositoryFactory ..> HorarioFuncionamentoMemoryRepository
+' COMMANDS --> MANAGERS
+AuthCommands --> AuthManager
+ClienteCommands --> ClienteManager
+FuncionarioCommands --> FuncionarioManager
+EmpresaCommands --> EmpresaManager
+AgendamentoCommands --> AgendamentoManager
+HorarioFuncionamentoCommands --> HorarioFuncionamentoManager
+EstatisticasCommands --> EstatisticasAcessoManager
+EstatisticasCommands --> RelatorioAcessoManager
+EstatisticasCommands --> ClienteManager
+EstatisticasCommands --> FuncionarioManager
+EstatisticasCommands --> AgendamentoManager
+PreviewCorteCommands --> PreviewCorteManager
 
-' ==================== CONFIGURAÇÃO ====================
+' MANAGERS --> MEMENTO
+EmpresaManager --> EmpresaOriginator
+EmpresaManager --> EmpresaCaretaker
+EmpresaOriginator ..> EmpresaMemento
+
+' MANAGERS --> TEMPLATE METHOD
+RelatorioAcessoManager --> RelatorioAcessosTemplate
+
+' MANAGERS --> STRATEGY
+PreviewCorteManager --> PreviewCorteStrategy
+
+' STRATEGY --> ADAPTER
+OpenAIPreviewCorteStrategy --> OpenAIImageAdapter
+
+' MANAGERS --> SERVICES
+AuthManager --> SenhaService
+AuthManager --> SessionService
+ClienteManager --> SenhaService
+ClienteManager --> ValidacaoUsuarioService
+FuncionarioManager --> SenhaService
+FuncionarioManager --> ValidacaoUsuarioService
+EmpresaManager --> ValidacaoUsuarioService
+AgendamentoManager --> ValidacaoAgendamentoService
+HorarioFuncionamentoManager --> ValidacaoHorarioService
+
+' MANAGERS --> MODELS
+ClienteManager --> Cliente
+FuncionarioManager --> Funcionario
+EmpresaManager --> Empresa
+AgendamentoManager --> Agendamento
+AgendamentoManager --> AgendamentoLoggingObserver
+AgendamentoManager --> AgendamentoEmailObserver
+HorarioFuncionamentoManager --> HorarioFuncionamento
+EstatisticasAcessoManager --> AcessoUsuario
+
+' MANAGERS --> REPOSITORY INTERFACES
+AuthManager --> RepositoryFactory
+ClienteManager --> RepositoryFactory
+FuncionarioManager --> RepositoryFactory
+EmpresaManager --> RepositoryFactory
+AgendamentoManager --> RepositoryFactory
+HorarioFuncionamentoManager --> RepositoryFactory
+EstatisticasAcessoManager --> RepositoryFactory
+
+' TEMPLATE --> MANAGERS
+RelatorioAcessosTemplate --> EstatisticasAcessoManager
+
+' FACTORY --> INTERFACES
+RepositoryFactory ..> IClienteRepository
+RepositoryFactory ..> IFuncionarioRepository
+RepositoryFactory ..> IEmpresaRepository
+RepositoryFactory ..> IAgendamentoRepository
+RepositoryFactory ..> IHorarioFuncionamentoRepository
+RepositoryFactory ..> IAcessoUsuarioRepository
 RepositoryFactory --> PersistenceConfig
 
-' ==================== SERVICES → EXCEPTIONS ====================
+' EXCEPTIONS INTERACTION
 ValidacaoUsuarioService --> ValidationException
 ValidacaoAgendamentoService --> ValidationException
 ValidacaoHorarioService --> ValidationException
 SessionService --> ValidationException
 
-' ==================== MANAGERS → EXCEPTIONS ====================
 AuthManager --> ValidationException
 AgendamentoManager --> NotFoundException
 
-' ==================== REPOSITORIES DB → EXCEPTIONS ====================
 ClienteDBRepository --> DatabaseException
 ClienteDBRepository --> DuplicateException
 FuncionarioDBRepository --> DatabaseException
@@ -179,5 +335,6 @@ AgendamentoDBRepository --> DatabaseException
 AgendamentoDBRepository --> NotFoundException
 HorarioFuncionamentoDBRepository --> DatabaseException
 HorarioFuncionamentoDBRepository --> NotFoundException
+AcessoUsuarioDBRepository --> DatabaseException
 
 @enduml
