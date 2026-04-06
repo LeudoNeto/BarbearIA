@@ -31,7 +31,8 @@ from commands import (
     ListarAgendamentosCommand, BuscarAgendamentoPorIdCommand,
     BuscarAgendamentosPorClienteCommand, BuscarAgendamentosPorBarbeiroCommand,
     CriarAgendamentoCommand, AtualizarAgendamentoCommand,
-    DeletarAgendamentoCommand, ContarAgendamentosCommand,
+    ConfirmarAgendamentoCommand, CancelarAgendamentoCommand,
+    ConcluirAgendamentoCommand, DeletarAgendamentoCommand, ContarAgendamentosCommand,
     # Estatísticas
     ObterEstatisticasSistemaCommand, ObterEstatisticasAcessoCommand,
     GerarRelatorioAcessosHtmlCommand, GerarRelatorioAcessosPdfCommand,
@@ -192,91 +193,25 @@ class FacadeSingletonController:
             AtualizarAgendamentoCommand(self._agendamento_manager, agendamento_id, dados)
         )
 
+    def confirmar_agendamento(self, agendamento_id: int):
+        return self._invoker.executar(
+            ConfirmarAgendamentoCommand(self._agendamento_manager, agendamento_id)
+        )
+
+    def cancelar_agendamento(self, agendamento_id: int):
+        return self._invoker.executar(
+            CancelarAgendamentoCommand(self._agendamento_manager, agendamento_id)
+        )
+
+    def concluir_agendamento(self, agendamento_id: int):
+        return self._invoker.executar(
+            ConcluirAgendamentoCommand(self._agendamento_manager, agendamento_id)
+        )
+
     def deletar_agendamento(self, agendamento_id: int):
         return self._invoker.executar(
             DeletarAgendamentoCommand(self._agendamento_manager, agendamento_id)
         )
-
-    def listar_agendamentos(self):
-        """
-        Lista todos os agendamentos.
-
-        :return: lista de dicts com dados dos agendamentos
-        """
-        return self.agendamento_manager.listar_agendamentos()
-
-    def buscar_agendamento_por_id(self, agendamento_id):
-        """
-        Busca um agendamento pelo ID.
-
-        :param agendamento_id: ID do agendamento
-        :return: dict com dados do agendamento ou None
-        """
-        return self.agendamento_manager.buscar_agendamento_por_id(agendamento_id)
-
-    def buscar_agendamentos_por_cliente(self, cliente_id):
-        """
-        Busca todos os agendamentos de um cliente.
-
-        :param cliente_id: ID do cliente
-        :return: lista de dicts com dados dos agendamentos
-        """
-        return self.agendamento_manager.buscar_agendamentos_por_cliente(cliente_id)
-
-    def buscar_agendamentos_por_barbeiro(self, barbeiro_id):
-        """
-        Busca todos os agendamentos de um barbeiro.
-
-        :param barbeiro_id: ID do barbeiro
-        :return: lista de dicts com dados dos agendamentos
-        """
-        return self.agendamento_manager.buscar_agendamentos_por_barbeiro(barbeiro_id)
-
-    def criar_agendamento(self, dados):
-        """
-        Cria um novo agendamento.
-
-        :param dados: dict com dados do agendamento
-        :return: dict com dados do agendamento criado
-        """
-        return self.agendamento_manager.criar_agendamento(dados)
-
-    def atualizar_agendamento(self, agendamento_id, dados):
-        """
-        Atualiza um agendamento existente.
-
-        :param agendamento_id: ID do agendamento
-        :param dados: dict com dados a atualizar
-        :return: dict com dados do agendamento atualizado
-        """
-        return self.agendamento_manager.atualizar_agendamento(agendamento_id, dados)
-
-    def confirmar_agendamento(self, agendamento_id):
-        """
-        Confirma um agendamento.
-        """
-        return self.agendamento_manager.confirmar_agendamento(agendamento_id)
-
-    def cancelar_agendamento(self, agendamento_id):
-        """
-        Cancela um agendamento.
-        """
-        return self.agendamento_manager.cancelar_agendamento(agendamento_id)
-
-    def concluir_agendamento(self, agendamento_id):
-        """
-        Conclui um agendamento.
-        """
-        return self.agendamento_manager.concluir_agendamento(agendamento_id)
-
-    def deletar_agendamento(self, agendamento_id):
-        """
-        Deleta um agendamento.
-
-        :param agendamento_id: ID do agendamento
-        :return: bool indicando sucesso
-        """
-        return self.agendamento_manager.deletar_agendamento(agendamento_id)
 
     # ==================== ESTATISTICAS ====================
 

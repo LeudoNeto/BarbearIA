@@ -7,6 +7,9 @@ from .agendamento_commands import (
     BuscarAgendamentosPorBarbeiroCommand,
     CriarAgendamentoCommand,
     AtualizarAgendamentoCommand,
+    ConfirmarAgendamentoCommand,
+    CancelarAgendamentoCommand,
+    ConcluirAgendamentoCommand,
     DeletarAgendamentoCommand,
     ContarAgendamentosCommand,
 )
@@ -57,6 +60,7 @@ __all__ = [
     "ListarAgendamentosCommand", "BuscarAgendamentoPorIdCommand",
     "BuscarAgendamentosPorClienteCommand", "BuscarAgendamentosPorBarbeiroCommand",
     "CriarAgendamentoCommand", "AtualizarAgendamentoCommand",
+    "ConfirmarAgendamentoCommand", "CancelarAgendamentoCommand", "ConcluirAgendamentoCommand",
     "DeletarAgendamentoCommand", "ContarAgendamentosCommand",
     "ObterEstatisticasSistemaCommand", "ObterEstatisticasAcessoCommand",
     "GerarRelatorioAcessosHtmlCommand", "GerarRelatorioAcessosPdfCommand",

@@ -62,6 +62,33 @@ class AtualizarAgendamentoCommand(Command):
         return self._agendamento_manager.atualizar_agendamento(self._id, self._dados)
 
 
+class ConfirmarAgendamentoCommand(Command):
+    def __init__(self, agendamento_manager, agendamento_id: int):
+        self._agendamento_manager = agendamento_manager
+        self._id = agendamento_id
+
+    def execute(self) -> dict:
+        return self._agendamento_manager.confirmar_agendamento(self._id)
+
+
+class CancelarAgendamentoCommand(Command):
+    def __init__(self, agendamento_manager, agendamento_id: int):
+        self._agendamento_manager = agendamento_manager
+        self._id = agendamento_id
+
+    def execute(self) -> dict:
+        return self._agendamento_manager.cancelar_agendamento(self._id)
+
+
+class ConcluirAgendamentoCommand(Command):
+    def __init__(self, agendamento_manager, agendamento_id: int):
+        self._agendamento_manager = agendamento_manager
+        self._id = agendamento_id
+
+    def execute(self) -> dict:
+        return self._agendamento_manager.concluir_agendamento(self._id)
+
+
 class DeletarAgendamentoCommand(Command):
     def __init__(self, agendamento_manager, agendamento_id: int):
         self._agendamento_manager = agendamento_manager
